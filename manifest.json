@@ -1,0 +1,14 @@
+{
+  "id": "audio-plugin-manager",
+  "name": "Audio Plugin Manager",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Este plugin para Obsidian te permite administrar tus plugins de audio (VST, DLL, etc.) directamente desde Obsidian. Integra la funcionalidad de un script de PowerShell para escanear, comprimir y catalogar plugins de audio, con una interfaz gráfica completa.",
+  "author": "Soneu-03",
+  "authorUrl": "https://yourwebsite.com",
+  "isDesktopOnly": true,
+  "fundingUrl": {
+    "GitHub Sponsor": "https://github.com/sponsors/yourusername",
+    "Buy Me a Coffee": "https://www.buymeacoffee.com/yourusername"
+  }
+}

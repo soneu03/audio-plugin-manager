@@ -1,0 +1,20 @@
+{
+  "mainFolder": "D:\\Sound\\Descargas\\Free Plugins\\Desarrolladores",
+  "extensions": [
+    ".dll",
+    ".vst3",
+    ".exe",
+    ".msi",
+    ".iso",
+    ".dmg"
+  ],
+  "foldersToIgnore": [
+    "Samples",
+    "Presets",
+    "Documentation",
+    "Manual"
+  ],
+  "lastScanDate": "28/2/2025, 21:08:20",
+  "autoGenerateNotes": true,
+  "notesFolder": "Plugins"
+}
