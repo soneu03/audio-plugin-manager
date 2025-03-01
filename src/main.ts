@@ -95,35 +95,42 @@ export default class AudioPluginManager extends Plugin {
     this.statusBar.update(this.settings.lastScanDate);
   }
 
+  requestScanStop() {
+    if (this.pluginScanner) {
+      this.pluginScanner.requestStop();
+    }
+  }
+
   async scanPlugins(onProgress?: (progress: number) => void): Promise<ScanResults> {
     try {
       if (!this.settings.mainFolder) {
         new Notice('Please set the main folder in settings first');
-        return { developers: 0, plugins: 0, zips: 0 };
+        return { developers: 0, plugins: 0, zips: 0, stopped: false };
       }
 
       new Notice('Scanning audio plugins...');
 
       // Ejecutar el escaneo
-      const results = await this.pluginScanner.scanAndProcessPlugins(progress => {
-        if (onProgress) {
-          onProgress(progress);
-        }
-        return;
-      });
+      const results = await this.pluginScanner.scanAndProcessPlugins(onProgress);
 
-      // Actualizar la fecha del último escaneo
+      // Actualizar la fecha del último escaneo solo si no fue detenido
+      if (!results.stopped) {
       this.settings.lastScanDate = new Date().toLocaleString();
       await this.saveSettings();
       this.updateStatusBar();
+      }
 
-      new Notice(`Scan complete! Found ${results.plugins} plugins from ${results.developers}`);
+      new Notice(
+        results.stopped
+          ? 'Scan stopped by user'
+          : `Scan complete! Found ${results.plugins} plugins from ${results.developers} developers`
+      );
 
       return results;
     } catch (error) {
       console.error('Error scanning plugins:', error);
       new Notice(`Error scanning plugins: ${error.message}`);
-      return { developers: 0, plugins: 0, zips: 0 };
+      return { developers: 0, plugins: 0, zips: 0, stopped: false };
     }
   }
 

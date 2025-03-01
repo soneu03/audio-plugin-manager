@@ -32,4 +32,5 @@ export interface ScanResults {
   developers: number;
   plugins: number;
   zips: number;
+  stopped: boolean;  // Nuevo campo para indicar si el escaneo fue detenido
 }

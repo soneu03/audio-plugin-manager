@@ -126,6 +126,7 @@ export class AudioPluginManagerSettingTab extends PluginSettingTab {
       cls: 'audio-plugin-log-container'
     });
 
+    // Botón de escaneo
     new Setting(containerEl)
       .setName('Scan Plugins')
       .setDesc('Scan for audio plugins in the main folder')
@@ -134,35 +135,35 @@ export class AudioPluginManagerSettingTab extends PluginSettingTab {
           .setButtonText('Scan')
           .onClick(async () => {
             if (this.isScanning) {
-              this.stopScan = true;
               button.setButtonText('Stopping...');
               button.setDisabled(true);
-              this.updateLog('Deteniendo escaneo...');
+              this.updateLog('Deteniendo escaneo (se completará el ZIP actual)...');
+              this.plugin.requestScanStop();
               return;
             }
 
             this.isScanning = true;
-            this.stopScan = false;
             button.setButtonText('Stop');
             this.progressBar.value = 0;
             this.updateLog('Iniciando escaneo de plugins...');
 
             try {
-              await this.plugin.scanPlugins((progress) => {
-                if (this.stopScan) {
-                  return;
-                }
+              const results = await this.plugin.scanPlugins((progress) => {
                 this.progressBar.value = progress;
                 if (progress % 10 === 0) {
                   this.updateLog(`Progreso del escaneo: ${Math.round(progress)}%`);
                 }
               });
-              this.updateLog('Escaneo completado exitosamente');
+
+              if (results.stopped) {
+                this.updateLog('Escaneo detenido por el usuario');
+              } else {
+                this.updateLog(`Escaneo completado: ${results.plugins} plugins procesados`);
+              }
             } catch (error) {
               this.updateLog(`Error durante el escaneo: ${error.message}`);
             } finally {
               this.isScanning = false;
-              this.stopScan = false;
               button.setButtonText('Scan');
               button.setDisabled(false);
             }
