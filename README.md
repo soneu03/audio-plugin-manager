@@ -1,5 +1,7 @@
 # Obsidian Audio Plugin Manager
-
+⚠️ **¡Precaución!** ⚠️
+ ⚠️ **En Pruebas** ⚠️
+⚠️ **¡Precaución!** ⚠️
 Este plugin para Obsidian te permite administrar tus plugins de audio (VST, DLL, etc.) directamente desde Obsidian. Integra la funcionalidad de un script de PowerShell para escanear, comprimir y catalogar plugins de audio, con una interfaz gráfica completa.
 
 ## Características
