@@ -1,3 +1,4 @@
+// ui/view.ts
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import AudioPluginManager from '../main';
 

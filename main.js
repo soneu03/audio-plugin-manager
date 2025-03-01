@@ -16593,35 +16593,123 @@ var import_obsidian = require("obsidian");
 var AudioPluginManagerSettingTab = class extends import_obsidian.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
+    this.isScanning = false;
+    this.stopScan = false;
     this.plugin = plugin;
+  }
+  updateLog(message) {
+    var _a;
+    const logEntry = this.logContainer.createEl("div", {
+      text: `${(/* @__PURE__ */ new Date()).toLocaleTimeString()} - ${message}`,
+      cls: "audio-plugin-log-entry"
+    });
+    while (this.logContainer.children.length > 10) {
+      (_a = this.logContainer.firstChild) == null ? void 0 : _a.remove();
+    }
+    this.lastActionEl.setText(`\xDAltima acci\xF3n: ${message}`);
+    this.logContainer.scrollTop = this.logContainer.scrollHeight;
   }
   display() {
     const { containerEl } = this;
     containerEl.empty();
+    containerEl.createEl("style", {
+      text: `
+        .audio-plugin-log-container {
+          margin-top: 20px;
+          padding: 10px;
+          background-color: var(--background-secondary);
+          border-radius: 5px;
+          max-height: 200px;
+          overflow-y: auto;
+        }
+        .audio-plugin-log-entry {
+          font-family: monospace;
+          padding: 2px 0;
+          font-size: 12px;
+        }
+        .audio-plugin-last-action {
+          margin-top: 10px;
+          padding: 5px;
+          font-weight: bold;
+          background-color: var(--background-modifier-border);
+          border-radius: 3px;
+        }
+      `
+    });
     containerEl.createEl("h2", { text: "Audio Plugin Manager Settings" });
     new import_obsidian.Setting(containerEl).setName("Main Folder").setDesc("Path to the folder containing your audio plugins").addText((text) => text.setPlaceholder("e.g., D:\\Sound\\Plugins").setValue(this.plugin.settings.mainFolder).onChange(async (value) => {
       this.plugin.settings.mainFolder = value;
       await this.plugin.saveSettings();
+      this.updateLog("Carpeta principal actualizada");
     }));
     new import_obsidian.Setting(containerEl).setName("File Extensions").setDesc("File extensions to include when scanning").addText((text) => text.setPlaceholder("e.g., .dll, .vst3, .exe").setValue(this.plugin.settings.extensions.join(", ")).onChange(async (value) => {
       this.plugin.settings.extensions = value.split(",").map((ext) => ext.trim()).filter((ext) => ext.length > 0);
       await this.plugin.saveSettings();
+      this.updateLog("Extensiones actualizadas");
     }));
     new import_obsidian.Setting(containerEl).setName("Folders to Ignore").setDesc("Folders to ignore when scanning").addText((text) => text.setPlaceholder("e.g., Samples, Presets, Documentation").setValue(this.plugin.settings.foldersToIgnore.join(", ")).onChange(async (value) => {
       this.plugin.settings.foldersToIgnore = value.split(",").map((folder) => folder.trim()).filter((folder) => folder.length > 0);
       await this.plugin.saveSettings();
+      this.updateLog("Carpetas ignoradas actualizadas");
     }));
     new import_obsidian.Setting(containerEl).setName("Auto-generate Notes").setDesc("Automatically generate a note for each plugin").addToggle((toggle) => toggle.setValue(this.plugin.settings.autoGenerateNotes).onChange(async (value) => {
       this.plugin.settings.autoGenerateNotes = value;
       await this.plugin.saveSettings();
+      this.updateLog(`Generaci\xF3n autom\xE1tica de notas ${value ? "activada" : "desactivada"}`);
     }));
     new import_obsidian.Setting(containerEl).setName("Notes Folder").setDesc("Folder where plugin notes will be stored").addText((text) => text.setPlaceholder("e.g., Plugins").setValue(this.plugin.settings.notesFolder).onChange(async (value) => {
       this.plugin.settings.notesFolder = value;
       await this.plugin.saveSettings();
+      this.updateLog("Carpeta de notas actualizada");
     }));
-    new import_obsidian.Setting(containerEl).setName("Scan Now").setDesc("Scan for audio plugins now").addButton((button) => button.setButtonText("Scan").onClick(async () => {
-      await this.plugin.scanPlugins();
-    }));
+    this.progressBar = containerEl.createEl("progress");
+    this.progressBar.max = 100;
+    this.progressBar.value = 0;
+    this.progressBar.style.width = "100%";
+    this.progressBar.style.marginTop = "20px";
+    this.lastActionEl = containerEl.createEl("div", {
+      cls: "audio-plugin-last-action",
+      text: "\xDAltima acci\xF3n: Ninguna"
+    });
+    containerEl.createEl("h3", { text: "Registro de Acciones" });
+    this.logContainer = containerEl.createEl("div", {
+      cls: "audio-plugin-log-container"
+    });
+    new import_obsidian.Setting(containerEl).setName("Scan Plugins").setDesc("Scan for audio plugins in the main folder").addButton((button) => {
+      button.setButtonText("Scan").onClick(async () => {
+        if (this.isScanning) {
+          this.stopScan = true;
+          button.setButtonText("Stopping...");
+          button.setDisabled(true);
+          this.updateLog("Deteniendo escaneo...");
+          return;
+        }
+        this.isScanning = true;
+        this.stopScan = false;
+        button.setButtonText("Stop");
+        this.progressBar.value = 0;
+        this.updateLog("Iniciando escaneo de plugins...");
+        try {
+          await this.plugin.scanPlugins((progress) => {
+            if (this.stopScan) {
+              return;
+            }
+            this.progressBar.value = progress;
+            if (progress % 10 === 0) {
+              this.updateLog(`Progreso del escaneo: ${Math.round(progress)}%`);
+            }
+          });
+          this.updateLog("Escaneo completado exitosamente");
+        } catch (error) {
+          this.updateLog(`Error durante el escaneo: ${error.message}`);
+        } finally {
+          this.isScanning = false;
+          this.stopScan = false;
+          button.setButtonText("Scan");
+          button.setDisabled(false);
+        }
+      });
+    });
   }
 };
 
@@ -16833,7 +16921,7 @@ var PluginScanner = class {
   /**
    * Función principal para escanear y procesar plugins
    */
-  async scanAndProcessPlugins() {
+  async scanAndProcessPlugins(onProgress, stopScan) {
     if (!fs2.existsSync(this.settings.mainFolder)) {
       throw new Error(`La carpeta '${this.settings.mainFolder}' no existe.`);
     }
@@ -16843,6 +16931,10 @@ var PluginScanner = class {
     const developerFolders = fs2.readdirSync(this.settings.mainFolder, { withFileTypes: true }).filter((dirent) => dirent.isDirectory()).map((dirent) => path2.join(this.settings.mainFolder, dirent.name));
     const allPlugins = [];
     for (const developerPath of developerFolders) {
+      if (stopScan && stopScan()) {
+        console.log("Scan stopped by user.");
+        break;
+      }
       const developerName = path2.basename(developerPath);
       console.log(`Procesando carpeta del desarrollador: ${developerName}`);
       const files = [];
@@ -16857,6 +16949,10 @@ var PluginScanner = class {
           pluginsGrouped[baseName].push(file);
         }
         for (const pluginName of Object.keys(pluginsGrouped)) {
+          if (stopScan && stopScan()) {
+            console.log("Scan stopped by user.");
+            break;
+          }
           const pluginFiles = pluginsGrouped[pluginName];
           const zipPath = path2.join(developerPath, `${pluginName}.zip`);
           try {
@@ -16889,6 +16985,10 @@ var PluginScanner = class {
         console.log(`  - No se encontraron archivos compatibles en esta carpeta`);
       }
       developersProcessed++;
+      if (onProgress) {
+        const progress = developersProcessed / developerFolders.length * 100;
+        onProgress(progress);
+      }
     }
     const jsonPath = path2.join(this.settings.mainFolder, "plugins-data.json");
     fs2.writeFileSync(jsonPath, JSON.stringify(allPlugins, null, 2), "utf8");
@@ -17089,18 +17189,23 @@ var AudioPluginManager = class extends import_obsidian5.Plugin {
   updateStatusBar() {
     this.statusBar.update(this.settings.lastScanDate);
   }
-  async scanPlugins() {
+  async scanPlugins(onProgress) {
     try {
       if (!this.settings.mainFolder) {
         new import_obsidian5.Notice("Please set the main folder in settings first");
         return { developers: 0, plugins: 0, zips: 0 };
       }
       new import_obsidian5.Notice("Scanning audio plugins...");
-      const results = await this.pluginScanner.scanAndProcessPlugins();
+      const results = await this.pluginScanner.scanAndProcessPlugins((progress) => {
+        if (onProgress) {
+          onProgress(progress);
+        }
+        return;
+      });
       this.settings.lastScanDate = (/* @__PURE__ */ new Date()).toLocaleString();
       await this.saveSettings();
       this.updateStatusBar();
-      new import_obsidian5.Notice(`Scan complete! Found ${results.plugins} plugins from ${results.developers} developers`);
+      new import_obsidian5.Notice(`Scan complete! Found ${results.plugins} plugins from ${results.developers}`);
       return results;
     } catch (error) {
       console.error("Error scanning plugins:", error);

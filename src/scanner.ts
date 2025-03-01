@@ -1,3 +1,4 @@
+// scanners.ts
 import * as fs from 'fs';
 import * as path from 'path';
 import { Notice } from 'obsidian';
@@ -130,7 +131,7 @@ export class PluginScanner {
   /**
    * Función principal para escanear y procesar plugins
    */
-  async scanAndProcessPlugins(): Promise<ScanResults> {
+  async scanAndProcessPlugins(onProgress?: (progress: number) => void, stopScan?: () => boolean): Promise<ScanResults> {
     // Verificar que la carpeta principal existe
     if (!fs.existsSync(this.settings.mainFolder)) {
       throw new Error(`La carpeta '${this.settings.mainFolder}' no existe.`);
@@ -151,6 +152,10 @@ export class PluginScanner {
     
     // Procesar cada carpeta de desarrollador
     for (const developerPath of developerFolders) {
+      if (stopScan && stopScan()) {
+        console.log('Scan stopped by user.');
+        break;
+      }
       const developerName = path.basename(developerPath);
       console.log(`Procesando carpeta del desarrollador: ${developerName}`);
       
@@ -174,6 +179,10 @@ export class PluginScanner {
         
         // Comprimir cada plugin en su propio archivo ZIP
         for (const pluginName of Object.keys(pluginsGrouped)) {
+          if (stopScan && stopScan()) {
+            console.log('Scan stopped by user.');
+            break;
+          }
           const pluginFiles = pluginsGrouped[pluginName];
           const zipPath = path.join(developerPath, `${pluginName}.zip`);
           
@@ -219,6 +228,12 @@ export class PluginScanner {
       }
       
       developersProcessed++;
+      
+      // Update progress
+      if (onProgress) {
+        const progress = (developersProcessed / developerFolders.length) * 100;
+        onProgress(progress);
+      }
     }
     
     // Crear archivo JSON con todos los datos

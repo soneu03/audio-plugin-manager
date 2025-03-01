@@ -1,3 +1,4 @@
+// types.ts
 // Interfaz para la información de un plugin
 export interface PluginInfo {
   name: string;

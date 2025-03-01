@@ -1,3 +1,4 @@
+// main.ts
 import { 
   App, 
   Plugin, 
@@ -5,7 +6,7 @@ import {
 } from 'obsidian';
 
 import { 
-  AudioPluginManagerSettings, 
+  AudioPluginManagerSettings as APMSettings, 
   DEFAULT_SETTINGS, 
   ScanResults 
 } from './types';
@@ -16,7 +17,7 @@ import { StatusBar } from './ui/statusBar';
 import { AUDIO_PLUGIN_VIEW, AudioPluginView } from './ui/view';
 
 export default class AudioPluginManager extends Plugin {
-  settings: AudioPluginManagerSettings;
+  settings: APMSettings;
   private statusBar: StatusBar;
   private pluginScanner: PluginScanner;
   private noteGenerator: NoteGenerator;
@@ -94,30 +95,35 @@ export default class AudioPluginManager extends Plugin {
     this.statusBar.update(this.settings.lastScanDate);
   }
 
-  async scanPlugins(): Promise<ScanResults> {
+  async scanPlugins(onProgress?: (progress: number) => void): Promise<ScanResults> {
     try {
       if (!this.settings.mainFolder) {
         new Notice('Please set the main folder in settings first');
-        return {developers: 0, plugins: 0, zips: 0};
+        return { developers: 0, plugins: 0, zips: 0 };
       }
 
       new Notice('Scanning audio plugins...');
-      
+
       // Ejecutar el escaneo
-      const results = await this.pluginScanner.scanAndProcessPlugins();
-      
+      const results = await this.pluginScanner.scanAndProcessPlugins(progress => {
+        if (onProgress) {
+          onProgress(progress);
+        }
+        return;
+      });
+
       // Actualizar la fecha del último escaneo
       this.settings.lastScanDate = new Date().toLocaleString();
       await this.saveSettings();
       this.updateStatusBar();
-      
-      new Notice(`Scan complete! Found ${results.plugins} plugins from ${results.developers} developers`);
-      
+
+      new Notice(`Scan complete! Found ${results.plugins} plugins from ${results.developers}`);
+
       return results;
     } catch (error) {
       console.error('Error scanning plugins:', error);
       new Notice(`Error scanning plugins: ${error.message}`);
-      return {developers: 0, plugins: 0, zips: 0};
+      return { developers: 0, plugins: 0, zips: 0 };
     }
   }
 
