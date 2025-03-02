@@ -17,6 +17,7 @@ export interface AudioPluginManagerSettings {
   lastScanDate: string;
   autoGenerateNotes: boolean;
   notesFolder: string;
+  saveNotesInPluginFolder: boolean; // Nueva configuración
 }
 
 export const DEFAULT_SETTINGS: AudioPluginManagerSettings = {
@@ -25,7 +26,8 @@ export const DEFAULT_SETTINGS: AudioPluginManagerSettings = {
   foldersToIgnore: ['Samples', 'Presets', 'Documentation', 'Manual'],
   lastScanDate: '',
   autoGenerateNotes: true,
-  notesFolder: 'Plugins'
+  notesFolder: 'Plugins',
+  saveNotesInPluginFolder: true // Por defecto, guardar en la carpeta del plugin
 };
 
 export interface ScanResults {

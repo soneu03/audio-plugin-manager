@@ -14,7 +14,8 @@
     "Documentation",
     "Manual"
   ],
-  "lastScanDate": "1/3/2025, 22:10:41",
+  "lastScanDate": "2/3/2025, 13:05:14",
   "autoGenerateNotes": true,
-  "notesFolder": "Plugins"
+  "notesFolder": "Plugins",
+  "saveNotesInPluginFolder": true
 }

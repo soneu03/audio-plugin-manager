@@ -27,8 +27,8 @@ export default class AudioPluginManager extends Plugin {
     
     // Inicializar componentes
     this.statusBar = new StatusBar(this);
-    this.noteGenerator = new NoteGenerator(this.app, this.settings.notesFolder);
-    this.pluginScanner = new PluginScanner(this.settings, this.noteGenerator,this.statusBar);
+    this.noteGenerator = new NoteGenerator(this.app, this.settings);
+    this.pluginScanner = new PluginScanner(this.settings, this.noteGenerator, this.statusBar);
     
     // Actualizar status bar
     this.updateStatusBar();
@@ -141,4 +141,9 @@ export default class AudioPluginManager extends Plugin {
   async saveSettings() {
     await this.saveData(this.settings);
   }
+
+  // Método público para establecer el callback de logging
+  public setPluginScannerLogCallback(callback: (message: string) => void) {
+    this.pluginScanner.setLogCallback(callback);
+}
 }

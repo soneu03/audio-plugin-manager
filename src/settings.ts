@@ -104,16 +104,34 @@ export class AudioPluginManagerSettingTab extends PluginSettingTab {
         }));
 
     new Setting(containerEl)
-      .setName('Notes Folder')
-      .setDesc('Folder where plugin notes will be stored')
+      .setName('Save Notes Location')
+      .setDesc('Choose where to save plugin notes')
+      .addDropdown(dropdown => dropdown
+        .addOption('plugin', 'In Plugin Folder')
+        .addOption('custom', 'In Custom Folder')
+        .setValue(this.plugin.settings.saveNotesInPluginFolder ? 'plugin' : 'custom')
+        .onChange(async (value) => {
+          this.plugin.settings.saveNotesInPluginFolder = value === 'plugin';
+          notesFolderSetting.settingEl.style.display = 
+            value === 'custom' ? 'block' : 'none';
+          await this.plugin.saveSettings();
+          this.updateLog(`Ubicación de notas cambiada a: ${value === 'plugin' ? 'carpeta del plugin' : 'carpeta personalizada'}`);
+        }));
+
+    const notesFolderSetting = new Setting(containerEl)
+      .setName('Custom Notes Folder')
+      .setDesc('Enter the folder name where plugin notes will be stored')
       .addText(text => text
         .setPlaceholder('e.g., Plugins')
         .setValue(this.plugin.settings.notesFolder)
         .onChange(async (value) => {
           this.plugin.settings.notesFolder = value;
           await this.plugin.saveSettings();
-          this.updateLog('Carpeta de notas actualizada');
+          this.updateLog('Carpeta de notas personalizada actualizada');
         }));
+
+    notesFolderSetting.settingEl.style.display = 
+      this.plugin.settings.saveNotesInPluginFolder ? 'none' : 'block';
 
     this.progressBar = containerEl.createEl('progress');
     this.progressBar.max = 100;
@@ -146,6 +164,11 @@ export class AudioPluginManagerSettingTab extends PluginSettingTab {
             button.setButtonText('Stop');
             this.progressBar.value = 0;
             this.updateLog('Iniciando escaneo de plugins...');
+
+            // Conectar el sistema de logging usando el nuevo método
+            this.plugin.setPluginScannerLogCallback((message) => {
+              this.updateLog(message);
+            });
 
             try {
               const results = await this.plugin.scanPlugins((progress) => {

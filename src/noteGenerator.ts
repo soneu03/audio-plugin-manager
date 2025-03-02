@@ -1,27 +1,36 @@
 // noteGenerator.ts
+import { App, TFile } from 'obsidian';
+import { PluginInfo, AudioPluginManagerSettings } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
-import { App, TFile } from 'obsidian';
-import { PluginInfo } from './types';
 
 export class NoteGenerator {
-  constructor(private app: App, private notesFolder: string) {}
+  constructor(
+    private app: App, 
+    private settings: AudioPluginManagerSettings
+  ) {}
 
-  /**
-   * Crea una nota para un plugin
-   */
   async createPluginNote(pluginName: string, pluginInfo: PluginInfo, pluginFiles: string[]): Promise<void> {
     try {
-      const basePath = (this.app.vault.adapter as any).basePath || '';
-      const notesFolder = path.join(basePath, this.notesFolder);
+      let notePath: string;
 
-      // Asegurar que la carpeta existe
-      if (!fs.existsSync(notesFolder)) {
-        fs.mkdirSync(notesFolder, { recursive: true });
+      if (this.settings.saveNotesInPluginFolder) {
+        // Guardar en la carpeta del plugin
+        const developerFolder = path.dirname(pluginInfo.filePath);
+        notePath = path.join(developerFolder, `${pluginName}.md`);
+      } else {
+        // Guardar en la carpeta personalizada
+        const basePath = (this.app.vault.adapter as any).basePath || '';
+        const notesFolder = path.join(basePath, this.settings.notesFolder);
+        
+        // Asegurar que la carpeta existe
+        if (!fs.existsSync(notesFolder)) {
+          fs.mkdirSync(notesFolder, { recursive: true });
+        }
+        
+        notePath = path.join(notesFolder, `${pluginName}.md`);
       }
-      
-      const notePath = path.join(notesFolder, `${pluginName}.md`);
-      
+
       // Crear contenido con frontmatter YAML
       let noteContent = `---
 type: plugin

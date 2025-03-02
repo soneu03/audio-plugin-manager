@@ -2891,7 +2891,7 @@ var require_async = __commonJS({
 // node_modules/graceful-fs/polyfills.js
 var require_polyfills = __commonJS({
   "node_modules/graceful-fs/polyfills.js"(exports, module2) {
-    var constants = require("constants");
+    var constants2 = require("constants");
     var origCwd = process.cwd;
     var cwd = null;
     var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform;
@@ -2915,7 +2915,7 @@ var require_polyfills = __commonJS({
     var chdir;
     module2.exports = patch;
     function patch(fs4) {
-      if (constants.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
+      if (constants2.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
         patchLchmod(fs4);
       }
       if (!fs4.lutimes) {
@@ -3017,7 +3017,7 @@ var require_polyfills = __commonJS({
         fs5.lchmod = function(path4, mode, callback) {
           fs5.open(
             path4,
-            constants.O_WRONLY | constants.O_SYMLINK,
+            constants2.O_WRONLY | constants2.O_SYMLINK,
             mode,
             function(err, fd) {
               if (err) {
@@ -3033,7 +3033,7 @@ var require_polyfills = __commonJS({
           );
         };
         fs5.lchmodSync = function(path4, mode) {
-          var fd = fs5.openSync(path4, constants.O_WRONLY | constants.O_SYMLINK, mode);
+          var fd = fs5.openSync(path4, constants2.O_WRONLY | constants2.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
@@ -3053,9 +3053,9 @@ var require_polyfills = __commonJS({
         };
       }
       function patchLutimes(fs5) {
-        if (constants.hasOwnProperty("O_SYMLINK") && fs5.futimes) {
+        if (constants2.hasOwnProperty("O_SYMLINK") && fs5.futimes) {
           fs5.lutimes = function(path4, at, mt, cb) {
-            fs5.open(path4, constants.O_SYMLINK, function(er, fd) {
+            fs5.open(path4, constants2.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
@@ -3068,7 +3068,7 @@ var require_polyfills = __commonJS({
             });
           };
           fs5.lutimesSync = function(path4, at, mt) {
-            var fd = fs5.openSync(path4, constants.O_SYMLINK);
+            var fd = fs5.openSync(path4, constants2.O_SYMLINK);
             var ret;
             var threw = true;
             try {
@@ -7403,7 +7403,7 @@ var require_lodash3 = __commonJS({
     var splice = arrayProto.splice;
     var spreadableSymbol = Symbol2 ? Symbol2.isConcatSpreadable : void 0;
     var nativeMax = Math.max;
-    var Map = getNative(root, "Map");
+    var Map2 = getNative(root, "Map");
     var nativeCreate = getNative(Object, "create");
     function Hash(entries) {
       var index = -1, length = entries ? entries.length : 0;
@@ -7497,7 +7497,7 @@ var require_lodash3 = __commonJS({
     function mapCacheClear() {
       this.__data__ = {
         "hash": new Hash(),
-        "map": new (Map || ListCache)(),
+        "map": new (Map2 || ListCache)(),
         "string": new Hash()
       };
     }
@@ -7798,8 +7798,8 @@ var require_lodash4 = __commonJS({
     var splice = arrayProto.splice;
     var spreadableSymbol = Symbol2 ? Symbol2.isConcatSpreadable : void 0;
     var nativeMax = Math.max;
-    var Map = getNative(root, "Map");
-    var Set2 = getNative(root, "Set");
+    var Map2 = getNative(root, "Map");
+    var Set = getNative(root, "Set");
     var nativeCreate = getNative(Object, "create");
     function Hash(entries) {
       var index = -1, length = entries ? entries.length : 0;
@@ -7893,7 +7893,7 @@ var require_lodash4 = __commonJS({
     function mapCacheClear() {
       this.__data__ = {
         "hash": new Hash(),
-        "map": new (Map || ListCache)(),
+        "map": new (Map2 || ListCache)(),
         "string": new Hash()
       };
     }
@@ -8021,8 +8021,8 @@ var require_lodash4 = __commonJS({
         }
       return result;
     }
-    var createSet = !(Set2 && 1 / setToArray(new Set2([, -0]))[1] == INFINITY) ? noop : function(values) {
-      return new Set2(values);
+    var createSet = !(Set && 1 / setToArray(new Set([, -0]))[1] == INFINITY) ? noop : function(values) {
+      return new Set(values);
     };
     function getMapData(map, key) {
       var data = map.__data__;
@@ -13767,14 +13767,14 @@ var require_zip_archive_entry = __commonJS({
     var ArchiveEntry = require_archive_entry();
     var GeneralPurposeBit = require_general_purpose_bit();
     var UnixStat = require_unix_stat();
-    var constants = require_constants();
+    var constants2 = require_constants();
     var zipUtil = require_util2();
     var ZipArchiveEntry = module2.exports = function(name) {
       if (!(this instanceof ZipArchiveEntry)) {
         return new ZipArchiveEntry(name);
       }
       ArchiveEntry.call(this);
-      this.platform = constants.PLATFORM_FAT;
+      this.platform = constants2.PLATFORM_FAT;
       this.method = -1;
       this.name = null;
       this.size = 0;
@@ -13782,7 +13782,7 @@ var require_zip_archive_entry = __commonJS({
       this.gpb = new GeneralPurposeBit();
       this.crc = 0;
       this.time = -1;
-      this.minver = constants.MIN_VERSION_INITIAL;
+      this.minver = constants2.MIN_VERSION_INITIAL;
       this.mode = -1;
       this.extra = null;
       this.exattr = 0;
@@ -13809,7 +13809,7 @@ var require_zip_archive_entry = __commonJS({
       return this.exattr;
     };
     ZipArchiveEntry.prototype.getExtra = function() {
-      return this.extra !== null ? this.extra : constants.EMPTY;
+      return this.extra !== null ? this.extra : constants2.EMPTY;
     };
     ZipArchiveEntry.prototype.getGeneralPurposeBit = function() {
       return this.gpb;
@@ -13842,7 +13842,7 @@ var require_zip_archive_entry = __commonJS({
       return this.time !== -1 ? this.time : 0;
     };
     ZipArchiveEntry.prototype.getUnixMode = function() {
-      return this.platform !== constants.PLATFORM_UNIX ? 0 : this.getExternalAttributes() >> constants.SHORT_SHIFT & constants.SHORT_MASK;
+      return this.platform !== constants2.PLATFORM_UNIX ? 0 : this.getExternalAttributes() >> constants2.SHORT_SHIFT & constants2.SHORT_MASK;
     };
     ZipArchiveEntry.prototype.getVersionNeededToExtract = function() {
       return this.minver;
@@ -13912,12 +13912,12 @@ var require_zip_archive_entry = __commonJS({
       this.time = zipUtil.dateToDos(time, forceLocalTime);
     };
     ZipArchiveEntry.prototype.setUnixMode = function(mode) {
-      mode |= this.isDirectory() ? constants.S_IFDIR : constants.S_IFREG;
+      mode |= this.isDirectory() ? constants2.S_IFDIR : constants2.S_IFREG;
       var extattr = 0;
-      extattr |= mode << constants.SHORT_SHIFT | (this.isDirectory() ? constants.S_DOS_D : constants.S_DOS_A);
+      extattr |= mode << constants2.SHORT_SHIFT | (this.isDirectory() ? constants2.S_DOS_D : constants2.S_DOS_A);
       this.setExternalAttributes(extattr);
-      this.mode = mode & constants.MODE_MASK;
-      this.platform = constants.PLATFORM_UNIX;
+      this.mode = mode & constants2.MODE_MASK;
+      this.platform = constants2.PLATFORM_UNIX;
     };
     ZipArchiveEntry.prototype.setVersionNeededToExtract = function(minver) {
       this.minver = minver;
@@ -13929,7 +13929,7 @@ var require_zip_archive_entry = __commonJS({
       return (this.getUnixMode() & UnixStat.FILE_TYPE_FLAG) === UnixStat.LINK_FLAG;
     };
     ZipArchiveEntry.prototype.isZip64 = function() {
-      return this.csize > constants.ZIP64_MAGIC || this.size > constants.ZIP64_MAGIC;
+      return this.csize > constants2.ZIP64_MAGIC || this.size > constants2.ZIP64_MAGIC;
     };
   }
 });
@@ -14554,7 +14554,7 @@ var require_zip_archive_output_stream = __commonJS({
     var ArchiveOutputStream = require_archive_output_stream();
     var ZipArchiveEntry = require_zip_archive_entry();
     var GeneralPurposeBit = require_general_purpose_bit();
-    var constants = require_constants();
+    var constants2 = require_constants();
     var util = require_util3();
     var zipUtil = require_util2();
     var ZipArchiveOutputStream = module2.exports = function(options) {
@@ -14590,21 +14590,21 @@ var require_zip_archive_output_stream = __commonJS({
     };
     ZipArchiveOutputStream.prototype._appendBuffer = function(ae, source, callback) {
       if (source.length === 0) {
-        ae.setMethod(constants.METHOD_STORED);
+        ae.setMethod(constants2.METHOD_STORED);
       }
       var method = ae.getMethod();
-      if (method === constants.METHOD_STORED) {
+      if (method === constants2.METHOD_STORED) {
         ae.setSize(source.length);
         ae.setCompressedSize(source.length);
         ae.setCrc(crc32.unsigned(source));
       }
       this._writeLocalFileHeader(ae);
-      if (method === constants.METHOD_STORED) {
+      if (method === constants2.METHOD_STORED) {
         this.write(source);
         this._afterAppend(ae);
         callback(null, ae);
         return;
-      } else if (method === constants.METHOD_DEFLATED) {
+      } else if (method === constants2.METHOD_DEFLATED) {
         this._smartStream(ae, callback).end(source);
         return;
       } else {
@@ -14614,7 +14614,7 @@ var require_zip_archive_output_stream = __commonJS({
     };
     ZipArchiveOutputStream.prototype._appendStream = function(ae, source, callback) {
       ae.getGeneralPurposeBit().useDataDescriptor(true);
-      ae.setVersionNeededToExtract(constants.MIN_VERSION_DATA_DESCRIPTOR);
+      ae.setVersionNeededToExtract(constants2.MIN_VERSION_DATA_DESCRIPTOR);
       this._writeLocalFileHeader(ae);
       var smart = this._smartStream(ae, callback);
       source.once("error", function(err) {
@@ -14631,7 +14631,7 @@ var require_zip_archive_output_stream = __commonJS({
         o.zlib = {};
       }
       if (typeof o.zlib.level !== "number") {
-        o.zlib.level = constants.ZLIB_BEST_SPEED;
+        o.zlib.level = constants2.ZLIB_BEST_SPEED;
       }
       o.forceZip64 = !!o.forceZip64;
       o.forceLocalTime = !!o.forceLocalTime;
@@ -14654,11 +14654,11 @@ var require_zip_archive_output_stream = __commonJS({
     };
     ZipArchiveOutputStream.prototype._normalizeEntry = function(ae) {
       if (ae.getMethod() === -1) {
-        ae.setMethod(constants.METHOD_DEFLATED);
+        ae.setMethod(constants2.METHOD_DEFLATED);
       }
-      if (ae.getMethod() === constants.METHOD_DEFLATED) {
+      if (ae.getMethod() === constants2.METHOD_DEFLATED) {
         ae.getGeneralPurposeBit().useDataDescriptor(true);
-        ae.setVersionNeededToExtract(constants.MIN_VERSION_DATA_DESCRIPTOR);
+        ae.setVersionNeededToExtract(constants2.MIN_VERSION_DATA_DESCRIPTOR);
       }
       if (ae.getTime() === -1) {
         ae.setTime(/* @__PURE__ */ new Date(), this._archive.forceLocalTime);
@@ -14670,7 +14670,7 @@ var require_zip_archive_output_stream = __commonJS({
       };
     };
     ZipArchiveOutputStream.prototype._smartStream = function(ae, callback) {
-      var deflate = ae.getMethod() === constants.METHOD_DEFLATED;
+      var deflate = ae.getMethod() === constants2.METHOD_DEFLATED;
       var process2 = deflate ? new DeflateCRC32Stream(this.options.zlib) : new CRC32Stream();
       var error = null;
       function handleStuff() {
@@ -14693,13 +14693,13 @@ var require_zip_archive_output_stream = __commonJS({
       var size = this._archive.centralLength;
       var offset = this._archive.centralOffset;
       if (this.isZip64()) {
-        records = constants.ZIP64_MAGIC_SHORT;
-        size = constants.ZIP64_MAGIC;
-        offset = constants.ZIP64_MAGIC;
+        records = constants2.ZIP64_MAGIC_SHORT;
+        size = constants2.ZIP64_MAGIC;
+        offset = constants2.ZIP64_MAGIC;
       }
-      this.write(zipUtil.getLongBytes(constants.SIG_EOCD));
-      this.write(constants.SHORT_ZERO);
-      this.write(constants.SHORT_ZERO);
+      this.write(zipUtil.getLongBytes(constants2.SIG_EOCD));
+      this.write(constants2.SHORT_ZERO);
+      this.write(constants2.SHORT_ZERO);
       this.write(zipUtil.getShortBytes(records));
       this.write(zipUtil.getShortBytes(records));
       this.write(zipUtil.getLongBytes(size));
@@ -14710,18 +14710,18 @@ var require_zip_archive_output_stream = __commonJS({
       this.write(comment);
     };
     ZipArchiveOutputStream.prototype._writeCentralDirectoryZip64 = function() {
-      this.write(zipUtil.getLongBytes(constants.SIG_ZIP64_EOCD));
+      this.write(zipUtil.getLongBytes(constants2.SIG_ZIP64_EOCD));
       this.write(zipUtil.getEightBytes(44));
-      this.write(zipUtil.getShortBytes(constants.MIN_VERSION_ZIP64));
-      this.write(zipUtil.getShortBytes(constants.MIN_VERSION_ZIP64));
-      this.write(constants.LONG_ZERO);
-      this.write(constants.LONG_ZERO);
+      this.write(zipUtil.getShortBytes(constants2.MIN_VERSION_ZIP64));
+      this.write(zipUtil.getShortBytes(constants2.MIN_VERSION_ZIP64));
+      this.write(constants2.LONG_ZERO);
+      this.write(constants2.LONG_ZERO);
       this.write(zipUtil.getEightBytes(this._entries.length));
       this.write(zipUtil.getEightBytes(this._entries.length));
       this.write(zipUtil.getEightBytes(this._archive.centralLength));
       this.write(zipUtil.getEightBytes(this._archive.centralOffset));
-      this.write(zipUtil.getLongBytes(constants.SIG_ZIP64_EOCD_LOC));
-      this.write(constants.LONG_ZERO);
+      this.write(zipUtil.getLongBytes(constants2.SIG_ZIP64_EOCD_LOC));
+      this.write(constants2.LONG_ZERO);
       this.write(zipUtil.getEightBytes(this._archive.centralOffset + this._archive.centralLength));
       this.write(zipUtil.getLongBytes(1));
     };
@@ -14731,12 +14731,12 @@ var require_zip_archive_output_stream = __commonJS({
       var offsets = ae._offsets;
       var size = ae.getSize();
       var compressedSize = ae.getCompressedSize();
-      if (ae.isZip64() || offsets.file > constants.ZIP64_MAGIC) {
-        size = constants.ZIP64_MAGIC;
-        compressedSize = constants.ZIP64_MAGIC;
-        ae.setVersionNeededToExtract(constants.MIN_VERSION_ZIP64);
+      if (ae.isZip64() || offsets.file > constants2.ZIP64_MAGIC) {
+        size = constants2.ZIP64_MAGIC;
+        compressedSize = constants2.ZIP64_MAGIC;
+        ae.setVersionNeededToExtract(constants2.MIN_VERSION_ZIP64);
         var extraBuf = Buffer.concat([
-          zipUtil.getShortBytes(constants.ZIP64_EXTRA_ID),
+          zipUtil.getShortBytes(constants2.ZIP64_EXTRA_ID),
           zipUtil.getShortBytes(24),
           zipUtil.getEightBytes(ae.getSize()),
           zipUtil.getEightBytes(ae.getCompressedSize()),
@@ -14744,8 +14744,8 @@ var require_zip_archive_output_stream = __commonJS({
         ], 28);
         ae.setExtra(extraBuf);
       }
-      this.write(zipUtil.getLongBytes(constants.SIG_CFH));
-      this.write(zipUtil.getShortBytes(ae.getPlatform() << 8 | constants.VERSION_MADEBY));
+      this.write(zipUtil.getLongBytes(constants2.SIG_CFH));
+      this.write(zipUtil.getShortBytes(ae.getPlatform() << 8 | constants2.VERSION_MADEBY));
       this.write(zipUtil.getShortBytes(ae.getVersionNeededToExtract()));
       this.write(gpb.encode());
       this.write(zipUtil.getShortBytes(method));
@@ -14763,11 +14763,11 @@ var require_zip_archive_output_stream = __commonJS({
       this.write(zipUtil.getShortBytes(name.length));
       this.write(zipUtil.getShortBytes(extra.length));
       this.write(zipUtil.getShortBytes(comment.length));
-      this.write(constants.SHORT_ZERO);
+      this.write(constants2.SHORT_ZERO);
       this.write(zipUtil.getShortBytes(ae.getInternalAttributes()));
       this.write(zipUtil.getLongBytes(ae.getExternalAttributes()));
-      if (offsets.file > constants.ZIP64_MAGIC) {
-        this.write(zipUtil.getLongBytes(constants.ZIP64_MAGIC));
+      if (offsets.file > constants2.ZIP64_MAGIC) {
+        this.write(zipUtil.getLongBytes(constants2.ZIP64_MAGIC));
       } else {
         this.write(zipUtil.getLongBytes(offsets.file));
       }
@@ -14776,7 +14776,7 @@ var require_zip_archive_output_stream = __commonJS({
       this.write(comment);
     };
     ZipArchiveOutputStream.prototype._writeDataDescriptor = function(ae) {
-      this.write(zipUtil.getLongBytes(constants.SIG_DD));
+      this.write(zipUtil.getLongBytes(constants2.SIG_DD));
       this.write(zipUtil.getLongBytes(ae.getCrc()));
       if (ae.isZip64()) {
         this.write(zipUtil.getEightBytes(ae.getCompressedSize()));
@@ -14793,22 +14793,22 @@ var require_zip_archive_output_stream = __commonJS({
       var extra = ae.getLocalFileDataExtra();
       if (ae.isZip64()) {
         gpb.useDataDescriptor(true);
-        ae.setVersionNeededToExtract(constants.MIN_VERSION_ZIP64);
+        ae.setVersionNeededToExtract(constants2.MIN_VERSION_ZIP64);
       }
       if (gpb.usesUTF8ForNames()) {
         name = Buffer.from(name);
       }
       ae._offsets.file = this.offset;
-      this.write(zipUtil.getLongBytes(constants.SIG_LFH));
+      this.write(zipUtil.getLongBytes(constants2.SIG_LFH));
       this.write(zipUtil.getShortBytes(ae.getVersionNeededToExtract()));
       this.write(gpb.encode());
       this.write(zipUtil.getShortBytes(method));
       this.write(zipUtil.getLongBytes(ae.getTimeDos()));
       ae._offsets.data = this.offset;
       if (gpb.usesDataDescriptor()) {
-        this.write(constants.LONG_ZERO);
-        this.write(constants.LONG_ZERO);
-        this.write(constants.LONG_ZERO);
+        this.write(constants2.LONG_ZERO);
+        this.write(constants2.LONG_ZERO);
+        this.write(constants2.LONG_ZERO);
       } else {
         this.write(zipUtil.getLongBytes(ae.getCrc()));
         this.write(zipUtil.getLongBytes(ae.getCompressedSize()));
@@ -14824,7 +14824,7 @@ var require_zip_archive_output_stream = __commonJS({
       return this._archive.comment !== null ? this._archive.comment : "";
     };
     ZipArchiveOutputStream.prototype.isZip64 = function() {
-      return this._archive.forceZip64 || this._entries.length > constants.ZIP64_MAGIC_SHORT || this._archive.centralLength > constants.ZIP64_MAGIC || this._archive.centralOffset > constants.ZIP64_MAGIC;
+      return this._archive.forceZip64 || this._entries.length > constants2.ZIP64_MAGIC_SHORT || this._archive.centralLength > constants2.ZIP64_MAGIC || this._archive.centralOffset > constants2.ZIP64_MAGIC;
     };
     ZipArchiveOutputStream.prototype.setComment = function(comment) {
       this._archive.comment = comment;
@@ -16175,7 +16175,7 @@ var require_end_of_stream2 = __commonJS({
 // node_modules/tar-stream/pack.js
 var require_pack = __commonJS({
   "node_modules/tar-stream/pack.js"(exports, module2) {
-    var constants = require_browser2();
+    var constants2 = require_browser2();
     var eos = require_end_of_stream2();
     var inherits = require_inherits_browser();
     var alloc = Buffer.alloc;
@@ -16193,16 +16193,16 @@ var require_pack = __commonJS({
       if (size) self2.push(END_OF_TAR.slice(0, 512 - size));
     };
     function modeToType(mode) {
-      switch (mode & constants.S_IFMT) {
-        case constants.S_IFBLK:
+      switch (mode & constants2.S_IFMT) {
+        case constants2.S_IFBLK:
           return "block-device";
-        case constants.S_IFCHR:
+        case constants2.S_IFCHR:
           return "character-device";
-        case constants.S_IFDIR:
+        case constants2.S_IFDIR:
           return "directory";
-        case constants.S_IFIFO:
+        case constants2.S_IFIFO:
           return "fifo";
-        case constants.S_IFLNK:
+        case constants2.S_IFLNK:
           return "symlink";
       }
       return "file";
@@ -16585,7 +16585,9 @@ var DEFAULT_SETTINGS = {
   foldersToIgnore: ["Samples", "Presets", "Documentation", "Manual"],
   lastScanDate: "",
   autoGenerateNotes: true,
-  notesFolder: "Plugins"
+  notesFolder: "Plugins",
+  saveNotesInPluginFolder: true
+  // Por defecto, guardar en la carpeta del plugin
 };
 
 // src/settings.ts
@@ -16649,11 +16651,18 @@ var AudioPluginManagerSettingTab = class extends import_obsidian.PluginSettingTa
       await this.plugin.saveSettings();
       this.updateLog(`Generaci\xF3n autom\xE1tica de notas ${value ? "activada" : "desactivada"}`);
     }));
-    new import_obsidian.Setting(containerEl).setName("Notes Folder").setDesc("Folder where plugin notes will be stored").addText((text) => text.setPlaceholder("e.g., Plugins").setValue(this.plugin.settings.notesFolder).onChange(async (value) => {
+    new import_obsidian.Setting(containerEl).setName("Save Notes Location").setDesc("Choose where to save plugin notes").addDropdown((dropdown) => dropdown.addOption("plugin", "In Plugin Folder").addOption("custom", "In Custom Folder").setValue(this.plugin.settings.saveNotesInPluginFolder ? "plugin" : "custom").onChange(async (value) => {
+      this.plugin.settings.saveNotesInPluginFolder = value === "plugin";
+      notesFolderSetting.settingEl.style.display = value === "custom" ? "block" : "none";
+      await this.plugin.saveSettings();
+      this.updateLog(`Ubicaci\xF3n de notas cambiada a: ${value === "plugin" ? "carpeta del plugin" : "carpeta personalizada"}`);
+    }));
+    const notesFolderSetting = new import_obsidian.Setting(containerEl).setName("Custom Notes Folder").setDesc("Enter the folder name where plugin notes will be stored").addText((text) => text.setPlaceholder("e.g., Plugins").setValue(this.plugin.settings.notesFolder).onChange(async (value) => {
       this.plugin.settings.notesFolder = value;
       await this.plugin.saveSettings();
-      this.updateLog("Carpeta de notas actualizada");
+      this.updateLog("Carpeta de notas personalizada actualizada");
     }));
+    notesFolderSetting.settingEl.style.display = this.plugin.settings.saveNotesInPluginFolder ? "none" : "block";
     this.progressBar = containerEl.createEl("progress");
     this.progressBar.max = 100;
     this.progressBar.value = 0;
@@ -16676,6 +16685,9 @@ var AudioPluginManagerSettingTab = class extends import_obsidian.PluginSettingTa
         button.setButtonText("Stop");
         this.progressBar.value = 0;
         this.updateLog("Iniciando escaneo de plugins...");
+        this.plugin.setPluginScannerLogCallback((message) => {
+          this.updateLog(message);
+        });
         try {
           const results = await this.plugin.scanPlugins((progress) => {
             this.progressBar.value = progress;
@@ -16701,8 +16713,6 @@ var AudioPluginManagerSettingTab = class extends import_obsidian.PluginSettingTa
 };
 
 // src/scanner.ts
-var fs2 = __toESM(require("fs"));
-var path2 = __toESM(require("path"));
 var import_obsidian2 = require("obsidian");
 
 // src/zipManager.ts
@@ -16797,12 +16807,102 @@ var ZipManager = class {
 };
 
 // src/scanner.ts
+var path2 = __toESM(require("path"));
+var fs2 = __toESM(require("fs"));
 var PluginScanner = class {
   constructor(settings, noteGenerator, statusBar) {
     this.settings = settings;
     this.noteGenerator = noteGenerator;
     this.statusBar = statusBar;
     this.stopRequested = false;
+    this.logCallback = null;
+  }
+  setLogCallback(callback) {
+    this.logCallback = callback;
+  }
+  log(message) {
+    if (this.logCallback) {
+      this.logCallback(message);
+    }
+    console.log(message);
+    new import_obsidian2.Notice(message);
+  }
+  isFileAlreadyProcessed(fileName, developerName, pluginName) {
+    const hasCorrectSeparator = fileName.includes(" - ");
+    const hasNoUnderscores = !fileName.includes("_");
+    const versionMatch = fileName.match(/\d+(\.\d+)*\.[a-zA-Z]+$/);
+    const hasVersionAndExt = versionMatch !== null;
+    return hasCorrectSeparator && hasNoUnderscores && hasVersionAndExt;
+  }
+  getPluginBaseName(fileName, developerName = "") {
+    let baseName = path2.basename(fileName, path2.extname(fileName));
+    baseName = baseName.replace(/[\s-]+/g, " ").trim();
+    if (developerName) {
+      const devNamePattern = new RegExp(`^${developerName}\\s*[-_]\\s*`, "i");
+      baseName = baseName.replace(devNamePattern, "");
+    }
+    baseName = baseName.replace(/\s*(v\d+(\.\d+)*|PC|Windows|x64|Setup)$/i, "");
+    return baseName;
+  }
+  sanitizePluginName(name) {
+    return name.replace(/[\s-]+/g, " ").trim();
+  }
+  normalizeFileName(filePath, developer, pluginName) {
+    const baseFileName = path2.basename(filePath);
+    const version = this.extractVersion(baseFileName);
+    const friendlyDeveloper = developer.replace(/_/g, " ").trim();
+    const friendlyPluginName = pluginName.replace(/_/g, " ").trim();
+    const ext = path2.extname(baseFileName);
+    return `${friendlyDeveloper} - ${friendlyPluginName}${version}${ext}`;
+  }
+  extractVersion(fileName) {
+    const versionPatterns = [
+      /v?(\d+\.\d+\.\d+)/i,
+      // v1.0.0 o 1.0.0
+      /v?(\d+\.\d+)/i,
+      // v1.0 o 1.0
+      /v?(\d+)/i
+      // v1 o 1
+    ];
+    for (const pattern of versionPatterns) {
+      const match = fileName.match(pattern);
+      if (match) {
+        return ` ${match[0]}`;
+      }
+    }
+    return "";
+  }
+  async processPlugin(filePath, developerPath, pluginName) {
+    const developer = path2.basename(developerPath);
+    const currentFileName = path2.basename(filePath);
+    if (!/^[a-zA-Z0-9\s\-_.]+$/.test(pluginName) || !/^[a-zA-Z0-9\s\-_.]+$/.test(developer)) {
+      throw new Error(`Invalid characters in plugin name or developer: ${pluginName} / ${developer}`);
+    }
+    if (this.isFileAlreadyProcessed(currentFileName, developer, pluginName)) {
+      return;
+    }
+    const newFileName = this.normalizeFileName(filePath, developer, pluginName);
+    let newPath = path2.join(developerPath, newFileName);
+    if (fs2.existsSync(newPath)) {
+      const timestamp = Date.now();
+      const ext = path2.extname(newFileName);
+      const baseName = newFileName.slice(0, -ext.length);
+      newPath = path2.join(developerPath, `${baseName}_${timestamp}${ext}`);
+    }
+    try {
+      await fs2.promises.access(developerPath, fs2.constants.W_OK);
+      await fs2.promises.rename(filePath, newPath);
+      await this.createDeveloperLog(
+        developerPath,
+        `Renamed: ${currentFileName} -> ${path2.basename(newPath)}`
+      );
+    } catch (error) {
+      if (error.code === "EACCES") {
+        throw new Error(`No write permission in directory: ${developerPath}`);
+      }
+      console.error(`Error renaming file ${filePath}:`, error);
+      throw error;
+    }
   }
   requestStop() {
     this.stopRequested = true;
@@ -16818,13 +16918,6 @@ var PluginScanner = class {
       console.error("Error exporting plugins:", error);
       new import_obsidian2.Notice(`Error exporting plugins: ${error.message}`);
     }
-  }
-  getPluginBaseName(fileName) {
-    let baseName = path2.basename(fileName, path2.extname(fileName));
-    if (fileName.includes(".vst3")) {
-      baseName = baseName.replace(/\.vst3$/, "");
-    }
-    return baseName;
   }
   shouldOmitPath(filePath) {
     return this.settings.foldersToIgnore.some(
@@ -16846,48 +16939,119 @@ var PluginScanner = class {
       }
     }
   }
-  async createMarkdownIndex(allPlugins, developersProcessed, pluginsCompressed, zipsCreated) {
+  async createDeveloperLog(developerPath, logEntry) {
+    const logFileName = "_developer_changes.log";
+    const logFilePath = path2.join(developerPath, logFileName);
+    const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+    const logLine = `[${timestamp}] ${logEntry}
+`;
     try {
-      const markdownPath = path2.join(this.settings.mainFolder, "Plugins-Index.md");
-      let markdownContent = `# \xCDndice de Plugins Audio
+      await fs2.promises.appendFile(logFilePath, logLine);
+    } catch (error) {
+      console.error(`Error writing to developer log: ${error}`);
+    }
+  }
+  categorizeFiles(files) {
+    const result = {
+      documentationFiles: [],
+      imageFiles: [],
+      otherFiles: []
+    };
+    for (const file of files) {
+      const ext = path2.extname(file).toLowerCase();
+      const fileName = path2.basename(file).toLowerCase();
+      if (ext === ".zip") {
+        result.zipFile = file;
+      } else if (ext === ".exe" || ext === ".msi") {
+        result.executableFile = file;
+      } else if ([".md", ".pdf", ".txt"].includes(ext)) {
+        result.documentationFiles.push(file);
+      } else if ([".png", ".jpg", ".jpeg", ".gif"].includes(ext)) {
+        result.imageFiles.push(file);
+      } else {
+        result.otherFiles.push(file);
+      }
+    }
+    return result;
+  }
+  async createMarkdownIndex(allPlugins) {
+    try {
+      const markdownPath = path2.join(this.settings.mainFolder, "../Desarrolladores/Index.md");
+      let markdownContent = `# \xCDndice de Plugins de Audio
 
 `;
-      markdownContent += `Generado autom\xE1ticamente el ${(/* @__PURE__ */ new Date()).toLocaleString()}
+      markdownContent += `Actualizado: ${(/* @__PURE__ */ new Date()).toLocaleString()}
 
 `;
+      const totalDevelopers = allPlugins.size;
+      const totalPlugins = Array.from(allPlugins.values()).reduce((sum, dev) => sum + Object.keys(dev).length, 0);
       markdownContent += `## Resumen
 
 `;
-      markdownContent += `- Desarrolladores: ${developersProcessed}
+      markdownContent += `- Desarrolladores: ${totalDevelopers}
 `;
-      markdownContent += `- Plugins: ${pluginsCompressed}
-`;
-      markdownContent += `- Archivos ZIP: ${zipsCreated}
+      markdownContent += `- Plugins: ${totalPlugins}
 
 `;
-      markdownContent += `## Plugins por desarrollador
+      markdownContent += `## Plugins por Desarrollador
 
 `;
-      const pluginsByDeveloper = {};
-      for (const plugin of allPlugins) {
-        if (!pluginsByDeveloper[plugin.developer]) {
-          pluginsByDeveloper[plugin.developer] = [];
-        }
-        pluginsByDeveloper[plugin.developer].push(plugin);
-      }
-      for (const developer of Object.keys(pluginsByDeveloper).sort()) {
+      const sortedDevelopers = Array.from(allPlugins.keys()).sort();
+      for (const developer of sortedDevelopers) {
+        const developerPlugins = allPlugins.get(developer);
         markdownContent += `### ${developer}
 
 `;
-        for (const plugin of pluginsByDeveloper[developer]) {
-          markdownContent += `- ${plugin.name} (${plugin.formats})
+        markdownContent += `[[Desarrolladores/${developer}/${developer}|Ver todos los plugins de ${developer}]]
+
+`;
+        const sortedPlugins = Object.entries(developerPlugins).sort(([a], [b]) => a.localeCompare(b));
+        for (const [pluginName, files] of sortedPlugins) {
+          markdownContent += `#### ${pluginName}
+
+`;
+          if (files.imageFiles.length > 0) {
+            const firstImage = files.imageFiles[0];
+            markdownContent += `![[Desarrolladores/${developer}/${path2.basename(firstImage)}]]
+
+`;
+          }
+          if (files.zipFile) {
+            markdownContent += `- \u{1F4E6} [[Desarrolladores/${developer}/${path2.basename(files.zipFile)}|Archivo ZIP]]
+`;
+          }
+          if (files.executableFile) {
+            markdownContent += `- \u2699\uFE0F [[Desarrolladores/${developer}/${path2.basename(files.executableFile)}|Instalador]]
+`;
+          }
+          if (files.documentationFiles.length > 0) {
+            markdownContent += `- \u{1F4DA} Documentaci\xF3n:
+`;
+            for (const doc of files.documentationFiles) {
+              markdownContent += `  - [[Desarrolladores/${developer}/${path2.basename(doc)}|${path2.basename(doc)}]]
+`;
+            }
+          }
+          if (files.otherFiles.length > 0) {
+            markdownContent += `- \u{1F4C4} Otros archivos:
+`;
+            for (const other of files.otherFiles) {
+              markdownContent += `  - [[Desarrolladores/${developer}/${path2.basename(other)}|${path2.basename(other)}]]
+`;
+            }
+          }
+          markdownContent += `
+---
+
 `;
         }
-        markdownContent += `
-`;
       }
-      fs2.writeFileSync(markdownPath, markdownContent, "utf8");
-      console.log(`Archivo Markdown generado: ${markdownPath}`);
+      const dir = path2.dirname(markdownPath);
+      if (!fs2.existsSync(dir)) {
+        fs2.mkdirSync(dir, { recursive: true });
+      }
+      await fs2.promises.writeFile(markdownPath, markdownContent, "utf8");
+      this.log(`\xCDndice Markdown generado: ${markdownPath}`);
       return markdownPath;
     } catch (error) {
       console.error("Error creating markdown index:", error);
@@ -16902,107 +17066,84 @@ var PluginScanner = class {
     let pluginsCompressed = 0;
     let zipsCreated = 0;
     const developerFolders = fs2.readdirSync(this.settings.mainFolder, { withFileTypes: true }).filter((dirent) => dirent.isDirectory()).map((dirent) => path2.join(this.settings.mainFolder, dirent.name));
-    const allPlugins = [];
+    const allPlugins = /* @__PURE__ */ new Map();
     for (const developerPath of developerFolders) {
       if (this.stopRequested) {
-        console.log("Scan stopped by user.");
+        this.log("Scan stopped by user.");
         break;
       }
       const developerName = path2.basename(developerPath);
-      console.log(`Procesando carpeta del desarrollador: ${developerName}`);
+      const developerPlugins = {};
       const files = [];
       this.findPluginFiles(developerPath, files);
-      if (files.length > 0) {
-        const pluginsGrouped = {};
-        for (const file of files) {
-          const baseName = this.getPluginBaseName(path2.basename(file));
-          if (!pluginsGrouped[baseName]) {
-            pluginsGrouped[baseName] = [];
-          }
-          pluginsGrouped[baseName].push(file);
+      const pluginsGrouped = {};
+      for (const file of files) {
+        const baseName = this.getPluginBaseName(path2.basename(file), developerName);
+        if (!pluginsGrouped[baseName]) {
+          pluginsGrouped[baseName] = [];
         }
-        for (const pluginName of Object.keys(pluginsGrouped)) {
-          if (this.stopRequested) {
-            console.log("Scan stopped by user.");
-            break;
-          }
-          const pluginFiles = pluginsGrouped[pluginName];
-          const zipPath = path2.join(developerPath, `${pluginName}.zip`);
-          try {
-            await ZipManager.createZipFile(zipPath, pluginFiles, this.statusBar);
-            if (!this.stopRequested) {
-              pluginsCompressed++;
-              zipsCreated++;
-            }
-            console.log(`  - Creado archivo ZIP: ${pluginName}.zip con ${pluginFiles.length} archivo(s)`);
-            const uniqueFormats = Array.from(new Set(
-              pluginFiles.map((file) => path2.extname(file))
-            )).join(", ");
-            console.log(`    Formatos incluidos: ${uniqueFormats}`);
-            const pluginInfo = {
-              name: pluginName,
-              developer: developerName,
-              formats: uniqueFormats,
-              filePath: zipPath,
-              fileCount: pluginFiles.length,
-              dateAdded: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
-            };
-            allPlugins.push(pluginInfo);
-            if (this.settings.autoGenerateNotes) {
-              await this.noteGenerator.createPluginNote(pluginName, pluginInfo, pluginFiles);
-            }
-          } catch (error) {
-            console.error(`  - Error al comprimir el plugin ${pluginName}:`, error);
-          }
-        }
-      } else {
-        console.log(`  - No se encontraron archivos compatibles en esta carpeta`);
+        pluginsGrouped[baseName].push(file);
       }
-      developersProcessed++;
+      for (const pluginName of Object.keys(pluginsGrouped)) {
+        if (this.stopRequested) break;
+        const pluginFiles = pluginsGrouped[pluginName];
+        developerPlugins[pluginName] = this.categorizeFiles(pluginFiles);
+        await this.processPlugin(pluginFiles[0], developerPath, pluginName);
+        await this.createDeveloperLog(
+          developerPath,
+          `Processed plugin: ${pluginName}
+  Files processed: ${pluginFiles.length}
+  Files renamed: ${pluginFiles.map((f) => path2.basename(f)).join(", ")}`
+        );
+      }
+      allPlugins.set(developerName, developerPlugins);
       if (onProgress) {
-        const progress = developersProcessed / developerFolders.length * 100;
+        const progress = (developerFolders.indexOf(developerPath) + 1) / developerFolders.length * 100;
         onProgress(progress);
       }
     }
+    await this.createMarkdownIndex(allPlugins);
     const jsonPath = path2.join(this.settings.mainFolder, "plugins-data.json");
-    fs2.writeFileSync(jsonPath, JSON.stringify(allPlugins, null, 2), "utf8");
-    const markdownPath = await this.createMarkdownIndex(allPlugins, developersProcessed, pluginsCompressed, zipsCreated);
+    fs2.writeFileSync(jsonPath, JSON.stringify(Array.from(allPlugins.values()), null, 2), "utf8");
     try {
-      await this.noteGenerator.importMarkdownIndex(markdownPath);
+      await this.noteGenerator.importMarkdownIndex(path2.join(this.settings.mainFolder, "Plugins-Index.md"));
       new import_obsidian2.Notice("Plugin index imported to your vault");
     } catch (error) {
       console.error("Error importing markdown index:", error);
       new import_obsidian2.Notice(`Error importing index: ${error.message}`);
     }
     return {
-      developers: developersProcessed,
-      plugins: pluginsCompressed,
-      zips: zipsCreated,
+      developers: allPlugins.size,
+      plugins: Array.from(allPlugins.values()).reduce((sum, dev) => sum + Object.keys(dev).length, 0),
+      zips: Array.from(allPlugins.values()).flatMap((dev) => Object.values(dev)).filter((files) => files.zipFile).length,
       stopped: this.stopRequested
     };
   }
 };
 
 // src/noteGenerator.ts
+var import_obsidian3 = require("obsidian");
 var fs3 = __toESM(require("fs"));
 var path3 = __toESM(require("path"));
-var import_obsidian3 = require("obsidian");
 var NoteGenerator = class {
-  constructor(app, notesFolder) {
+  constructor(app, settings) {
     this.app = app;
-    this.notesFolder = notesFolder;
+    this.settings = settings;
   }
-  /**
-   * Crea una nota para un plugin
-   */
   async createPluginNote(pluginName, pluginInfo, pluginFiles) {
     try {
-      const basePath = this.app.vault.adapter.basePath || "";
-      const notesFolder = path3.join(basePath, this.notesFolder);
-      if (!fs3.existsSync(notesFolder)) {
-        fs3.mkdirSync(notesFolder, { recursive: true });
+      let notePath;
+      if (this.settings.saveNotesInPluginFolder) {
+        const developerFolder = path3.dirname(pluginInfo.filePath);
+        notePath = path3.join(developerFolder, `${pluginName}.md`);
+      } else {
+        const basePath = this.app.vault.adapter.basePath || "";
+        const notesFolder = path3.join(basePath, this.settings.notesFolder);
+        if (!fs3.existsSync(notesFolder)) {
+          fs3.mkdirSync(notesFolder, { recursive: true });
+        }
+        notePath = path3.join(notesFolder, `${pluginName}.md`);
       }
-      const notePath = path3.join(notesFolder, `${pluginName}.md`);
       let noteContent = `---
 type: plugin
 developer: ${pluginInfo.developer}
@@ -17117,7 +17258,7 @@ var AudioPluginManager = class extends import_obsidian5.Plugin {
   async onload() {
     await this.loadSettings();
     this.statusBar = new StatusBar(this);
-    this.noteGenerator = new NoteGenerator(this.app, this.settings.notesFolder);
+    this.noteGenerator = new NoteGenerator(this.app, this.settings);
     this.pluginScanner = new PluginScanner(this.settings, this.noteGenerator, this.statusBar);
     this.updateStatusBar();
     this.addSettingTab(new AudioPluginManagerSettingTab(this.app, this));
@@ -17197,6 +17338,10 @@ var AudioPluginManager = class extends import_obsidian5.Plugin {
   }
   async saveSettings() {
     await this.saveData(this.settings);
+  }
+  // Método público para establecer el callback de logging
+  setPluginScannerLogCallback(callback) {
+    this.pluginScanner.setLogCallback(callback);
   }
 };
 /*! Bundled license information:
