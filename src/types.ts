@@ -1,4 +1,15 @@
 // types.ts
+/**
+ * Este archivo define las interfaces y tipos utilizados en el plugin Audio Plugin Manager.
+ * Incluye:
+ * - `PluginInfo`: Interfaz para la información de un plugin.
+ * - `AudioPluginManagerSettings`: Interfaz para la configuración del plugin.
+ * - `DEFAULT_SETTINGS`: Configuración por defecto del plugin.
+ * - `ScanResults`: Interfaz para los resultados del escaneo de plugins.
+ * - `PluginFiles`: Interfaz para los archivos de un plugin categorizados.
+ * - `DeveloperPlugins`: Interfaz para la estructura de plugins por desarrollador.
+ */
+
 // Interfaz para la información de un plugin
 export interface PluginInfo {
   name: string;

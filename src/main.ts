@@ -1,3 +1,17 @@
+/**
+ * This is the main plugin class for the Audio Plugin Manager.
+ * It manages the plugin's lifecycle, settings, UI, and core functionality.
+ *
+ * Methods include:
+ * - `onload`: Initializes the plugin, loads settings, initializes components, registers views and commands.
+ * - `activateView`: Activates the plugin's view in the workspace.
+ * - `updateStatusBar`: Updates the status bar with the last scan date.
+ * - `requestScanStop`: Requests the plugin scanner to stop the current scan.
+ * - `scanPlugins`: Scans for audio plugins in the configured directory.
+ * - `loadSettings`: Loads the plugin settings from data.
+ * - `saveSettings`: Saves the plugin settings to data.
+ * - `setPluginScannerLogCallback`: Sets the callback function for logging messages from the plugin scanner.
+ */
 // main.ts
 import { 
   App, 
@@ -123,7 +137,7 @@ export default class AudioPluginManager extends Plugin {
       new Notice(
         results.stopped
           ? 'Scan stopped by user'
-          : `Scan complete! Found ${results.plugins} plugins from ${results.developers} developers`
+          : `Scan complete! Found ${results.plugins} plugins from ${results.developers}`
       );
 
       return results;

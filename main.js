@@ -261,8 +261,8 @@ var require_minimatch = __commonJS({
       return new Minimatch(pattern, options).match(p);
     };
     module2.exports = minimatch;
-    var path5 = require_path();
-    minimatch.sep = path5.sep;
+    var path9 = require_path();
+    minimatch.sep = path9.sep;
     var GLOBSTAR = Symbol("globstar **");
     minimatch.GLOBSTAR = GLOBSTAR;
     var expand = require_brace_expansion();
@@ -771,8 +771,8 @@ var require_minimatch = __commonJS({
         if (this.empty) return f === "";
         if (f === "/" && partial) return true;
         const options = this.options;
-        if (path5.sep !== "/") {
-          f = f.split(path5.sep).join("/");
+        if (path9.sep !== "/") {
+          f = f.split(path9.sep).join("/");
         }
         f = f.split(slashSplit);
         this.debug(this.pattern, "split", f);
@@ -810,13 +810,13 @@ var require_minimatch = __commonJS({
 var require_readdir_glob = __commonJS({
   "node_modules/readdir-glob/index.js"(exports, module2) {
     module2.exports = readdirGlob;
-    var fs5 = require("fs");
+    var fs8 = require("fs");
     var { EventEmitter } = require("events");
     var { Minimatch } = require_minimatch();
     var { resolve } = require("path");
     function readdir(dir, strict) {
       return new Promise((resolve2, reject) => {
-        fs5.readdir(dir, { withFileTypes: true }, (err, files) => {
+        fs8.readdir(dir, { withFileTypes: true }, (err, files) => {
           if (err) {
             switch (err.code) {
               case "ENOTDIR":
@@ -849,7 +849,7 @@ var require_readdir_glob = __commonJS({
     }
     function stat(file, followSymlinks) {
       return new Promise((resolve2, reject) => {
-        const statFunc = followSymlinks ? fs5.stat : fs5.lstat;
+        const statFunc = followSymlinks ? fs8.stat : fs8.lstat;
         statFunc(file, (err, stats) => {
           if (err) {
             switch (err.code) {
@@ -870,8 +870,8 @@ var require_readdir_glob = __commonJS({
         });
       });
     }
-    async function* exploreWalkAsync(dir, path5, followSymlinks, useStat, shouldSkip, strict) {
-      let files = await readdir(path5 + dir, strict);
+    async function* exploreWalkAsync(dir, path9, followSymlinks, useStat, shouldSkip, strict) {
+      let files = await readdir(path9 + dir, strict);
       for (const file of files) {
         let name = file.name;
         if (name === void 0) {
@@ -880,7 +880,7 @@ var require_readdir_glob = __commonJS({
         }
         const filename = dir + "/" + name;
         const relative = filename.slice(1);
-        const absolute = path5 + "/" + relative;
+        const absolute = path9 + "/" + relative;
         let stats = null;
         if (useStat || followSymlinks) {
           stats = await stat(absolute, followSymlinks);
@@ -894,15 +894,15 @@ var require_readdir_glob = __commonJS({
         if (stats.isDirectory()) {
           if (!shouldSkip(relative)) {
             yield { relative, absolute, stats };
-            yield* exploreWalkAsync(filename, path5, followSymlinks, useStat, shouldSkip, false);
+            yield* exploreWalkAsync(filename, path9, followSymlinks, useStat, shouldSkip, false);
           }
         } else {
           yield { relative, absolute, stats };
         }
       }
     }
-    async function* explore(path5, followSymlinks, useStat, shouldSkip) {
-      yield* exploreWalkAsync("", path5, followSymlinks, useStat, shouldSkip, true);
+    async function* explore(path9, followSymlinks, useStat, shouldSkip) {
+      yield* exploreWalkAsync("", path9, followSymlinks, useStat, shouldSkip, true);
     }
     function readOptions(options) {
       return {
@@ -2914,54 +2914,54 @@ var require_polyfills = __commonJS({
     }
     var chdir;
     module2.exports = patch;
-    function patch(fs5) {
+    function patch(fs8) {
       if (constants2.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-        patchLchmod(fs5);
+        patchLchmod(fs8);
       }
-      if (!fs5.lutimes) {
-        patchLutimes(fs5);
+      if (!fs8.lutimes) {
+        patchLutimes(fs8);
       }
-      fs5.chown = chownFix(fs5.chown);
-      fs5.fchown = chownFix(fs5.fchown);
-      fs5.lchown = chownFix(fs5.lchown);
-      fs5.chmod = chmodFix(fs5.chmod);
-      fs5.fchmod = chmodFix(fs5.fchmod);
-      fs5.lchmod = chmodFix(fs5.lchmod);
-      fs5.chownSync = chownFixSync(fs5.chownSync);
-      fs5.fchownSync = chownFixSync(fs5.fchownSync);
-      fs5.lchownSync = chownFixSync(fs5.lchownSync);
-      fs5.chmodSync = chmodFixSync(fs5.chmodSync);
-      fs5.fchmodSync = chmodFixSync(fs5.fchmodSync);
-      fs5.lchmodSync = chmodFixSync(fs5.lchmodSync);
-      fs5.stat = statFix(fs5.stat);
-      fs5.fstat = statFix(fs5.fstat);
-      fs5.lstat = statFix(fs5.lstat);
-      fs5.statSync = statFixSync(fs5.statSync);
-      fs5.fstatSync = statFixSync(fs5.fstatSync);
-      fs5.lstatSync = statFixSync(fs5.lstatSync);
-      if (fs5.chmod && !fs5.lchmod) {
-        fs5.lchmod = function(path5, mode, cb) {
+      fs8.chown = chownFix(fs8.chown);
+      fs8.fchown = chownFix(fs8.fchown);
+      fs8.lchown = chownFix(fs8.lchown);
+      fs8.chmod = chmodFix(fs8.chmod);
+      fs8.fchmod = chmodFix(fs8.fchmod);
+      fs8.lchmod = chmodFix(fs8.lchmod);
+      fs8.chownSync = chownFixSync(fs8.chownSync);
+      fs8.fchownSync = chownFixSync(fs8.fchownSync);
+      fs8.lchownSync = chownFixSync(fs8.lchownSync);
+      fs8.chmodSync = chmodFixSync(fs8.chmodSync);
+      fs8.fchmodSync = chmodFixSync(fs8.fchmodSync);
+      fs8.lchmodSync = chmodFixSync(fs8.lchmodSync);
+      fs8.stat = statFix(fs8.stat);
+      fs8.fstat = statFix(fs8.fstat);
+      fs8.lstat = statFix(fs8.lstat);
+      fs8.statSync = statFixSync(fs8.statSync);
+      fs8.fstatSync = statFixSync(fs8.fstatSync);
+      fs8.lstatSync = statFixSync(fs8.lstatSync);
+      if (fs8.chmod && !fs8.lchmod) {
+        fs8.lchmod = function(path9, mode, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs5.lchmodSync = function() {
+        fs8.lchmodSync = function() {
         };
       }
-      if (fs5.chown && !fs5.lchown) {
-        fs5.lchown = function(path5, uid, gid, cb) {
+      if (fs8.chown && !fs8.lchown) {
+        fs8.lchown = function(path9, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs5.lchownSync = function() {
+        fs8.lchownSync = function() {
         };
       }
       if (platform === "win32") {
-        fs5.rename = typeof fs5.rename !== "function" ? fs5.rename : function(fs$rename) {
+        fs8.rename = typeof fs8.rename !== "function" ? fs8.rename : function(fs$rename) {
           function rename(from, to, cb) {
             var start = Date.now();
             var backoff = 0;
             fs$rename(from, to, function CB(er) {
               if (er && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY") && Date.now() - start < 6e4) {
                 setTimeout(function() {
-                  fs5.stat(to, function(stater, st) {
+                  fs8.stat(to, function(stater, st) {
                     if (stater && stater.code === "ENOENT")
                       fs$rename(from, to, CB);
                     else
@@ -2977,9 +2977,9 @@ var require_polyfills = __commonJS({
           }
           if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
           return rename;
-        }(fs5.rename);
+        }(fs8.rename);
       }
-      fs5.read = typeof fs5.read !== "function" ? fs5.read : function(fs$read) {
+      fs8.read = typeof fs8.read !== "function" ? fs8.read : function(fs$read) {
         function read(fd, buffer, offset, length, position, callback_) {
           var callback;
           if (callback_ && typeof callback_ === "function") {
@@ -2987,22 +2987,22 @@ var require_polyfills = __commonJS({
             callback = function(er, _2, __) {
               if (er && er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
-                return fs$read.call(fs5, fd, buffer, offset, length, position, callback);
+                return fs$read.call(fs8, fd, buffer, offset, length, position, callback);
               }
               callback_.apply(this, arguments);
             };
           }
-          return fs$read.call(fs5, fd, buffer, offset, length, position, callback);
+          return fs$read.call(fs8, fd, buffer, offset, length, position, callback);
         }
         if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
         return read;
-      }(fs5.read);
-      fs5.readSync = typeof fs5.readSync !== "function" ? fs5.readSync : /* @__PURE__ */ function(fs$readSync) {
+      }(fs8.read);
+      fs8.readSync = typeof fs8.readSync !== "function" ? fs8.readSync : /* @__PURE__ */ function(fs$readSync) {
         return function(fd, buffer, offset, length, position) {
           var eagCounter = 0;
           while (true) {
             try {
-              return fs$readSync.call(fs5, fd, buffer, offset, length, position);
+              return fs$readSync.call(fs8, fd, buffer, offset, length, position);
             } catch (er) {
               if (er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
@@ -3012,11 +3012,11 @@ var require_polyfills = __commonJS({
             }
           }
         };
-      }(fs5.readSync);
-      function patchLchmod(fs6) {
-        fs6.lchmod = function(path5, mode, callback) {
-          fs6.open(
-            path5,
+      }(fs8.readSync);
+      function patchLchmod(fs9) {
+        fs9.lchmod = function(path9, mode, callback) {
+          fs9.open(
+            path9,
             constants2.O_WRONLY | constants2.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -3024,80 +3024,80 @@ var require_polyfills = __commonJS({
                 if (callback) callback(err);
                 return;
               }
-              fs6.fchmod(fd, mode, function(err2) {
-                fs6.close(fd, function(err22) {
+              fs9.fchmod(fd, mode, function(err2) {
+                fs9.close(fd, function(err22) {
                   if (callback) callback(err2 || err22);
                 });
               });
             }
           );
         };
-        fs6.lchmodSync = function(path5, mode) {
-          var fd = fs6.openSync(path5, constants2.O_WRONLY | constants2.O_SYMLINK, mode);
+        fs9.lchmodSync = function(path9, mode) {
+          var fd = fs9.openSync(path9, constants2.O_WRONLY | constants2.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
-            ret = fs6.fchmodSync(fd, mode);
+            ret = fs9.fchmodSync(fd, mode);
             threw = false;
           } finally {
             if (threw) {
               try {
-                fs6.closeSync(fd);
+                fs9.closeSync(fd);
               } catch (er) {
               }
             } else {
-              fs6.closeSync(fd);
+              fs9.closeSync(fd);
             }
           }
           return ret;
         };
       }
-      function patchLutimes(fs6) {
-        if (constants2.hasOwnProperty("O_SYMLINK") && fs6.futimes) {
-          fs6.lutimes = function(path5, at, mt, cb) {
-            fs6.open(path5, constants2.O_SYMLINK, function(er, fd) {
+      function patchLutimes(fs9) {
+        if (constants2.hasOwnProperty("O_SYMLINK") && fs9.futimes) {
+          fs9.lutimes = function(path9, at, mt, cb) {
+            fs9.open(path9, constants2.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
               }
-              fs6.futimes(fd, at, mt, function(er2) {
-                fs6.close(fd, function(er22) {
+              fs9.futimes(fd, at, mt, function(er2) {
+                fs9.close(fd, function(er22) {
                   if (cb) cb(er2 || er22);
                 });
               });
             });
           };
-          fs6.lutimesSync = function(path5, at, mt) {
-            var fd = fs6.openSync(path5, constants2.O_SYMLINK);
+          fs9.lutimesSync = function(path9, at, mt) {
+            var fd = fs9.openSync(path9, constants2.O_SYMLINK);
             var ret;
             var threw = true;
             try {
-              ret = fs6.futimesSync(fd, at, mt);
+              ret = fs9.futimesSync(fd, at, mt);
               threw = false;
             } finally {
               if (threw) {
                 try {
-                  fs6.closeSync(fd);
+                  fs9.closeSync(fd);
                 } catch (er) {
                 }
               } else {
-                fs6.closeSync(fd);
+                fs9.closeSync(fd);
               }
             }
             return ret;
           };
-        } else if (fs6.futimes) {
-          fs6.lutimes = function(_a, _b, _c, cb) {
+        } else if (fs9.futimes) {
+          fs9.lutimes = function(_a, _b, _c, cb) {
             if (cb) process.nextTick(cb);
           };
-          fs6.lutimesSync = function() {
+          fs9.lutimesSync = function() {
           };
         }
       }
       function chmodFix(orig) {
         if (!orig) return orig;
         return function(target, mode, cb) {
-          return orig.call(fs5, target, mode, function(er) {
+          return orig.call(fs8, target, mode, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -3107,7 +3107,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, mode) {
           try {
-            return orig.call(fs5, target, mode);
+            return orig.call(fs8, target, mode);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -3116,7 +3116,7 @@ var require_polyfills = __commonJS({
       function chownFix(orig) {
         if (!orig) return orig;
         return function(target, uid, gid, cb) {
-          return orig.call(fs5, target, uid, gid, function(er) {
+          return orig.call(fs8, target, uid, gid, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -3126,7 +3126,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, uid, gid) {
           try {
-            return orig.call(fs5, target, uid, gid);
+            return orig.call(fs8, target, uid, gid);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -3146,13 +3146,13 @@ var require_polyfills = __commonJS({
             }
             if (cb) cb.apply(this, arguments);
           }
-          return options ? orig.call(fs5, target, options, callback) : orig.call(fs5, target, callback);
+          return options ? orig.call(fs8, target, options, callback) : orig.call(fs8, target, callback);
         };
       }
       function statFixSync(orig) {
         if (!orig) return orig;
         return function(target, options) {
-          var stats = options ? orig.call(fs5, target, options) : orig.call(fs5, target);
+          var stats = options ? orig.call(fs8, target, options) : orig.call(fs8, target);
           if (stats) {
             if (stats.uid < 0) stats.uid += 4294967296;
             if (stats.gid < 0) stats.gid += 4294967296;
@@ -3181,16 +3181,16 @@ var require_legacy_streams = __commonJS({
   "node_modules/graceful-fs/legacy-streams.js"(exports, module2) {
     var Stream = require("stream").Stream;
     module2.exports = legacy;
-    function legacy(fs5) {
+    function legacy(fs8) {
       return {
         ReadStream,
         WriteStream
       };
-      function ReadStream(path5, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path5, options);
+      function ReadStream(path9, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path9, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path5;
+        this.path = path9;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -3224,7 +3224,7 @@ var require_legacy_streams = __commonJS({
           });
           return;
         }
-        fs5.open(this.path, this.flags, this.mode, function(err, fd) {
+        fs8.open(this.path, this.flags, this.mode, function(err, fd) {
           if (err) {
             self2.emit("error", err);
             self2.readable = false;
@@ -3235,10 +3235,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path5, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path5, options);
+      function WriteStream(path9, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path9, options);
         Stream.call(this);
-        this.path = path5;
+        this.path = path9;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -3263,7 +3263,7 @@ var require_legacy_streams = __commonJS({
         this.busy = false;
         this._queue = [];
         if (this.fd === null) {
-          this._open = fs5.open;
+          this._open = fs8.open;
           this._queue.push([this._open, this.path, this.flags, this.mode, void 0]);
           this.flush();
         }
@@ -3298,7 +3298,7 @@ var require_clone = __commonJS({
 // node_modules/graceful-fs/graceful-fs.js
 var require_graceful_fs = __commonJS({
   "node_modules/graceful-fs/graceful-fs.js"(exports, module2) {
-    var fs5 = require("fs");
+    var fs8 = require("fs");
     var polyfills = require_polyfills();
     var legacy = require_legacy_streams();
     var clone = require_clone();
@@ -3330,12 +3330,12 @@ var require_graceful_fs = __commonJS({
         m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
         console.error(m);
       };
-    if (!fs5[gracefulQueue]) {
+    if (!fs8[gracefulQueue]) {
       queue = global[gracefulQueue] || [];
-      publishQueue(fs5, queue);
-      fs5.close = function(fs$close) {
+      publishQueue(fs8, queue);
+      fs8.close = function(fs$close) {
         function close(fd, cb) {
-          return fs$close.call(fs5, fd, function(err) {
+          return fs$close.call(fs8, fd, function(err) {
             if (!err) {
               resetQueue();
             }
@@ -3347,48 +3347,48 @@ var require_graceful_fs = __commonJS({
           value: fs$close
         });
         return close;
-      }(fs5.close);
-      fs5.closeSync = function(fs$closeSync) {
+      }(fs8.close);
+      fs8.closeSync = function(fs$closeSync) {
         function closeSync(fd) {
-          fs$closeSync.apply(fs5, arguments);
+          fs$closeSync.apply(fs8, arguments);
           resetQueue();
         }
         Object.defineProperty(closeSync, previousSymbol, {
           value: fs$closeSync
         });
         return closeSync;
-      }(fs5.closeSync);
+      }(fs8.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
-          debug(fs5[gracefulQueue]);
-          require("assert").equal(fs5[gracefulQueue].length, 0);
+          debug(fs8[gracefulQueue]);
+          require("assert").equal(fs8[gracefulQueue].length, 0);
         });
       }
     }
     var queue;
     if (!global[gracefulQueue]) {
-      publishQueue(global, fs5[gracefulQueue]);
+      publishQueue(global, fs8[gracefulQueue]);
     }
-    module2.exports = patch(clone(fs5));
-    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs5.__patched) {
-      module2.exports = patch(fs5);
-      fs5.__patched = true;
+    module2.exports = patch(clone(fs8));
+    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs8.__patched) {
+      module2.exports = patch(fs8);
+      fs8.__patched = true;
     }
-    function patch(fs6) {
-      polyfills(fs6);
-      fs6.gracefulify = patch;
-      fs6.createReadStream = createReadStream2;
-      fs6.createWriteStream = createWriteStream2;
-      var fs$readFile = fs6.readFile;
-      fs6.readFile = readFile;
-      function readFile(path5, options, cb) {
+    function patch(fs9) {
+      polyfills(fs9);
+      fs9.gracefulify = patch;
+      fs9.createReadStream = createReadStream2;
+      fs9.createWriteStream = createWriteStream2;
+      var fs$readFile = fs9.readFile;
+      fs9.readFile = readFile;
+      function readFile(path9, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path5, options, cb);
-        function go$readFile(path6, options2, cb2, startTime) {
-          return fs$readFile(path6, options2, function(err) {
+        return go$readFile(path9, options, cb);
+        function go$readFile(path10, options2, cb2, startTime) {
+          return fs$readFile(path10, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path6, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path10, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -3396,16 +3396,16 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$writeFile = fs6.writeFile;
-      fs6.writeFile = writeFile;
-      function writeFile(path5, data, options, cb) {
+      var fs$writeFile = fs9.writeFile;
+      fs9.writeFile = writeFile;
+      function writeFile(path9, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path5, data, options, cb);
-        function go$writeFile(path6, data2, options2, cb2, startTime) {
-          return fs$writeFile(path6, data2, options2, function(err) {
+        return go$writeFile(path9, data, options, cb);
+        function go$writeFile(path10, data2, options2, cb2, startTime) {
+          return fs$writeFile(path10, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path6, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path10, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -3413,17 +3413,17 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$appendFile = fs6.appendFile;
+      var fs$appendFile = fs9.appendFile;
       if (fs$appendFile)
-        fs6.appendFile = appendFile;
-      function appendFile(path5, data, options, cb) {
+        fs9.appendFile = appendFile;
+      function appendFile(path9, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path5, data, options, cb);
-        function go$appendFile(path6, data2, options2, cb2, startTime) {
-          return fs$appendFile(path6, data2, options2, function(err) {
+        return go$appendFile(path9, data, options, cb);
+        function go$appendFile(path10, data2, options2, cb2, startTime) {
+          return fs$appendFile(path10, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path6, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path10, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -3431,9 +3431,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$copyFile = fs6.copyFile;
+      var fs$copyFile = fs9.copyFile;
       if (fs$copyFile)
-        fs6.copyFile = copyFile;
+        fs9.copyFile = copyFile;
       function copyFile(src, dest, flags, cb) {
         if (typeof flags === "function") {
           cb = flags;
@@ -3451,34 +3451,34 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$readdir = fs6.readdir;
-      fs6.readdir = readdir;
+      var fs$readdir = fs9.readdir;
+      fs9.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path5, options, cb) {
+      function readdir(path9, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path6, options2, cb2, startTime) {
-          return fs$readdir(path6, fs$readdirCallback(
-            path6,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path10, options2, cb2, startTime) {
+          return fs$readdir(path10, fs$readdirCallback(
+            path10,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path6, options2, cb2, startTime) {
-          return fs$readdir(path6, options2, fs$readdirCallback(
-            path6,
+        } : function go$readdir2(path10, options2, cb2, startTime) {
+          return fs$readdir(path10, options2, fs$readdirCallback(
+            path10,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path5, options, cb);
-        function fs$readdirCallback(path6, options2, cb2, startTime) {
+        return go$readdir(path9, options, cb);
+        function fs$readdirCallback(path10, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path6, options2, cb2],
+                [path10, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -3493,21 +3493,21 @@ var require_graceful_fs = __commonJS({
         }
       }
       if (process.version.substr(0, 4) === "v0.8") {
-        var legStreams = legacy(fs6);
+        var legStreams = legacy(fs9);
         ReadStream = legStreams.ReadStream;
         WriteStream = legStreams.WriteStream;
       }
-      var fs$ReadStream = fs6.ReadStream;
+      var fs$ReadStream = fs9.ReadStream;
       if (fs$ReadStream) {
         ReadStream.prototype = Object.create(fs$ReadStream.prototype);
         ReadStream.prototype.open = ReadStream$open;
       }
-      var fs$WriteStream = fs6.WriteStream;
+      var fs$WriteStream = fs9.WriteStream;
       if (fs$WriteStream) {
         WriteStream.prototype = Object.create(fs$WriteStream.prototype);
         WriteStream.prototype.open = WriteStream$open;
       }
-      Object.defineProperty(fs6, "ReadStream", {
+      Object.defineProperty(fs9, "ReadStream", {
         get: function() {
           return ReadStream;
         },
@@ -3517,7 +3517,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      Object.defineProperty(fs6, "WriteStream", {
+      Object.defineProperty(fs9, "WriteStream", {
         get: function() {
           return WriteStream;
         },
@@ -3528,7 +3528,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileReadStream = ReadStream;
-      Object.defineProperty(fs6, "FileReadStream", {
+      Object.defineProperty(fs9, "FileReadStream", {
         get: function() {
           return FileReadStream;
         },
@@ -3539,7 +3539,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileWriteStream = WriteStream;
-      Object.defineProperty(fs6, "FileWriteStream", {
+      Object.defineProperty(fs9, "FileWriteStream", {
         get: function() {
           return FileWriteStream;
         },
@@ -3549,7 +3549,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path5, options) {
+      function ReadStream(path9, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -3569,7 +3569,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path5, options) {
+      function WriteStream(path9, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -3587,22 +3587,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream2(path5, options) {
-        return new fs6.ReadStream(path5, options);
+      function createReadStream2(path9, options) {
+        return new fs9.ReadStream(path9, options);
       }
-      function createWriteStream2(path5, options) {
-        return new fs6.WriteStream(path5, options);
+      function createWriteStream2(path9, options) {
+        return new fs9.WriteStream(path9, options);
       }
-      var fs$open = fs6.open;
-      fs6.open = open;
-      function open(path5, flags, mode, cb) {
+      var fs$open = fs9.open;
+      fs9.open = open;
+      function open(path9, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path5, flags, mode, cb);
-        function go$open(path6, flags2, mode2, cb2, startTime) {
-          return fs$open(path6, flags2, mode2, function(err, fd) {
+        return go$open(path9, flags, mode, cb);
+        function go$open(path10, flags2, mode2, cb2, startTime) {
+          return fs$open(path10, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path6, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path10, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -3610,20 +3610,20 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      return fs6;
+      return fs9;
     }
     function enqueue(elem) {
       debug("ENQUEUE", elem[0].name, elem[1]);
-      fs5[gracefulQueue].push(elem);
+      fs8[gracefulQueue].push(elem);
       retry();
     }
     var retryTimer;
     function resetQueue() {
       var now = Date.now();
-      for (var i = 0; i < fs5[gracefulQueue].length; ++i) {
-        if (fs5[gracefulQueue][i].length > 2) {
-          fs5[gracefulQueue][i][3] = now;
-          fs5[gracefulQueue][i][4] = now;
+      for (var i = 0; i < fs8[gracefulQueue].length; ++i) {
+        if (fs8[gracefulQueue][i].length > 2) {
+          fs8[gracefulQueue][i][3] = now;
+          fs8[gracefulQueue][i][4] = now;
         }
       }
       retry();
@@ -3631,9 +3631,9 @@ var require_graceful_fs = __commonJS({
     function retry() {
       clearTimeout(retryTimer);
       retryTimer = void 0;
-      if (fs5[gracefulQueue].length === 0)
+      if (fs8[gracefulQueue].length === 0)
         return;
-      var elem = fs5[gracefulQueue].shift();
+      var elem = fs8[gracefulQueue].shift();
       var fn = elem[0];
       var args = elem[1];
       var err = elem[2];
@@ -3655,7 +3655,7 @@ var require_graceful_fs = __commonJS({
           debug("RETRY", fn.name, args);
           fn.apply(null, args.concat([startTime]));
         } else {
-          fs5[gracefulQueue].push(elem);
+          fs8[gracefulQueue].push(elem);
         }
       }
       if (retryTimer === void 0) {
@@ -3932,7 +3932,7 @@ var require_BufferList = __commonJS({
         this.head = this.tail = null;
         this.length = 0;
       };
-      BufferList.prototype.join = function join4(s) {
+      BufferList.prototype.join = function join7(s) {
         if (this.length === 0) return "";
         var p = this.head;
         var ret = "" + p.data;
@@ -5460,22 +5460,22 @@ var require_lazystream = __commonJS({
 // node_modules/normalize-path/index.js
 var require_normalize_path = __commonJS({
   "node_modules/normalize-path/index.js"(exports, module2) {
-    module2.exports = function(path5, stripTrailing) {
-      if (typeof path5 !== "string") {
+    module2.exports = function(path9, stripTrailing) {
+      if (typeof path9 !== "string") {
         throw new TypeError("expected path to be a string");
       }
-      if (path5 === "\\" || path5 === "/") return "/";
-      var len = path5.length;
-      if (len <= 1) return path5;
+      if (path9 === "\\" || path9 === "/") return "/";
+      var len = path9.length;
+      if (len <= 1) return path9;
       var prefix = "";
-      if (len > 4 && path5[3] === "\\") {
-        var ch = path5[2];
-        if ((ch === "?" || ch === ".") && path5.slice(0, 2) === "\\\\") {
-          path5 = path5.slice(2);
+      if (len > 4 && path9[3] === "\\") {
+        var ch = path9[2];
+        if ((ch === "?" || ch === ".") && path9.slice(0, 2) === "\\\\") {
+          path9 = path9.slice(2);
           prefix = "//";
         }
       }
-      var segs = path5.split(/[/\\]+/);
+      var segs = path9.split(/[/\\]+/);
       if (stripTrailing !== false && segs[segs.length - 1] === "") {
         segs.pop();
       }
@@ -5773,7 +5773,7 @@ var require_BufferList2 = __commonJS({
         this.head = this.tail = null;
         this.length = 0;
       };
-      BufferList.prototype.join = function join4(s) {
+      BufferList.prototype.join = function join7(s) {
         if (this.length === 0) return "";
         var p = this.head;
         var ret = "" + p.data;
@@ -8140,7 +8140,7 @@ var require_old = __commonJS({
   "node_modules/fs.realpath/old.js"(exports) {
     var pathModule = require("path");
     var isWindows = process.platform === "win32";
-    var fs5 = require("fs");
+    var fs8 = require("fs");
     var DEBUG = process.env.NODE_DEBUG && /fs/.test(process.env.NODE_DEBUG);
     function rethrow() {
       var callback;
@@ -8205,7 +8205,7 @@ var require_old = __commonJS({
         base = m[0];
         previous = "";
         if (isWindows && !knownHard[base]) {
-          fs5.lstatSync(base);
+          fs8.lstatSync(base);
           knownHard[base] = true;
         }
       }
@@ -8223,7 +8223,7 @@ var require_old = __commonJS({
         if (cache && Object.prototype.hasOwnProperty.call(cache, base)) {
           resolvedLink = cache[base];
         } else {
-          var stat = fs5.lstatSync(base);
+          var stat = fs8.lstatSync(base);
           if (!stat.isSymbolicLink()) {
             knownHard[base] = true;
             if (cache) cache[base] = base;
@@ -8237,8 +8237,8 @@ var require_old = __commonJS({
             }
           }
           if (linkTarget === null) {
-            fs5.statSync(base);
-            linkTarget = fs5.readlinkSync(base);
+            fs8.statSync(base);
+            linkTarget = fs8.readlinkSync(base);
           }
           resolvedLink = pathModule.resolve(previous, linkTarget);
           if (cache) cache[base] = resolvedLink;
@@ -8272,7 +8272,7 @@ var require_old = __commonJS({
         base = m[0];
         previous = "";
         if (isWindows && !knownHard[base]) {
-          fs5.lstat(base, function(err) {
+          fs8.lstat(base, function(err) {
             if (err) return cb(err);
             knownHard[base] = true;
             LOOP();
@@ -8298,7 +8298,7 @@ var require_old = __commonJS({
         if (cache && Object.prototype.hasOwnProperty.call(cache, base)) {
           return gotResolvedLink(cache[base]);
         }
-        return fs5.lstat(base, gotStat);
+        return fs8.lstat(base, gotStat);
       }
       function gotStat(err, stat) {
         if (err) return cb(err);
@@ -8313,9 +8313,9 @@ var require_old = __commonJS({
             return gotTarget(null, seenLinks[id], base);
           }
         }
-        fs5.stat(base, function(err2) {
+        fs8.stat(base, function(err2) {
           if (err2) return cb(err2);
-          fs5.readlink(base, function(err3, target) {
+          fs8.readlink(base, function(err3, target) {
             if (!isWindows) seenLinks[id] = target;
             gotTarget(err3, target);
           });
@@ -8344,9 +8344,9 @@ var require_fs = __commonJS({
     realpath.realpathSync = realpathSync;
     realpath.monkeypatch = monkeypatch;
     realpath.unmonkeypatch = unmonkeypatch;
-    var fs5 = require("fs");
-    var origRealpath = fs5.realpath;
-    var origRealpathSync = fs5.realpathSync;
+    var fs8 = require("fs");
+    var origRealpath = fs8.realpath;
+    var origRealpathSync = fs8.realpathSync;
     var version = process.version;
     var ok = /^v[0-5]\./.test(version);
     var old = require_old();
@@ -8384,12 +8384,12 @@ var require_fs = __commonJS({
       }
     }
     function monkeypatch() {
-      fs5.realpath = realpath;
-      fs5.realpathSync = realpathSync;
+      fs8.realpath = realpath;
+      fs8.realpathSync = realpathSync;
     }
     function unmonkeypatch() {
-      fs5.realpath = origRealpath;
-      fs5.realpathSync = origRealpathSync;
+      fs8.realpath = origRealpath;
+      fs8.realpathSync = origRealpathSync;
     }
   }
 });
@@ -8561,7 +8561,7 @@ var require_minimatch2 = __commonJS({
   "node_modules/minimatch/minimatch.js"(exports, module2) {
     module2.exports = minimatch;
     minimatch.Minimatch = Minimatch;
-    var path5 = function() {
+    var path9 = function() {
       try {
         return require("path");
       } catch (e) {
@@ -8569,7 +8569,7 @@ var require_minimatch2 = __commonJS({
     }() || {
       sep: "/"
     };
-    minimatch.sep = path5.sep;
+    minimatch.sep = path9.sep;
     var GLOBSTAR = minimatch.GLOBSTAR = Minimatch.GLOBSTAR = {};
     var expand = require_brace_expansion2();
     var plTypes = {
@@ -8658,8 +8658,8 @@ var require_minimatch2 = __commonJS({
       assertValidPattern(pattern);
       if (!options) options = {};
       pattern = pattern.trim();
-      if (!options.allowWindowsEscape && path5.sep !== "/") {
-        pattern = pattern.split(path5.sep).join("/");
+      if (!options.allowWindowsEscape && path9.sep !== "/") {
+        pattern = pattern.split(path9.sep).join("/");
       }
       this.options = options;
       this.set = [];
@@ -9028,8 +9028,8 @@ var require_minimatch2 = __commonJS({
       if (this.empty) return f === "";
       if (f === "/" && partial) return true;
       var options = this.options;
-      if (path5.sep !== "/") {
-        f = f.split(path5.sep).join("/");
+      if (path9.sep !== "/") {
+        f = f.split(path9.sep).join("/");
       }
       f = f.split(slashSplit);
       this.debug(this.pattern, "split", f);
@@ -9133,12 +9133,12 @@ var require_minimatch2 = __commonJS({
 var require_path_is_absolute = __commonJS({
   "node_modules/path-is-absolute/index.js"(exports, module2) {
     "use strict";
-    function posix(path5) {
-      return path5.charAt(0) === "/";
+    function posix(path9) {
+      return path9.charAt(0) === "/";
     }
-    function win32(path5) {
+    function win32(path9) {
       var splitDeviceRe = /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/;
-      var result = splitDeviceRe.exec(path5);
+      var result = splitDeviceRe.exec(path9);
       var device = result[1] || "";
       var isUnc = Boolean(device && device.charAt(1) !== ":");
       return Boolean(result[2] || isUnc);
@@ -9162,8 +9162,8 @@ var require_common = __commonJS({
     function ownProp(obj, field) {
       return Object.prototype.hasOwnProperty.call(obj, field);
     }
-    var fs5 = require("fs");
-    var path5 = require("path");
+    var fs8 = require("fs");
+    var path9 = require("path");
     var minimatch = require_minimatch2();
     var isAbsolute = require_path_is_absolute();
     var Minimatch = minimatch.Minimatch;
@@ -9217,7 +9217,7 @@ var require_common = __commonJS({
       self2.stat = !!options.stat;
       self2.noprocess = !!options.noprocess;
       self2.absolute = !!options.absolute;
-      self2.fs = options.fs || fs5;
+      self2.fs = options.fs || fs8;
       self2.maxLength = options.maxLength || Infinity;
       self2.cache = options.cache || /* @__PURE__ */ Object.create(null);
       self2.statCache = options.statCache || /* @__PURE__ */ Object.create(null);
@@ -9228,11 +9228,11 @@ var require_common = __commonJS({
       if (!ownProp(options, "cwd"))
         self2.cwd = cwd;
       else {
-        self2.cwd = path5.resolve(options.cwd);
+        self2.cwd = path9.resolve(options.cwd);
         self2.changedCwd = self2.cwd !== cwd;
       }
-      self2.root = options.root || path5.resolve(self2.cwd, "/");
-      self2.root = path5.resolve(self2.root);
+      self2.root = options.root || path9.resolve(self2.cwd, "/");
+      self2.root = path9.resolve(self2.root);
       if (process.platform === "win32")
         self2.root = self2.root.replace(/\\/g, "/");
       self2.cwdAbs = isAbsolute(self2.cwd) ? self2.cwd : makeAbs(self2, self2.cwd);
@@ -9314,30 +9314,30 @@ var require_common = __commonJS({
     function makeAbs(self2, f) {
       var abs = f;
       if (f.charAt(0) === "/") {
-        abs = path5.join(self2.root, f);
+        abs = path9.join(self2.root, f);
       } else if (isAbsolute(f) || f === "") {
         abs = f;
       } else if (self2.changedCwd) {
-        abs = path5.resolve(self2.cwd, f);
+        abs = path9.resolve(self2.cwd, f);
       } else {
-        abs = path5.resolve(f);
+        abs = path9.resolve(f);
       }
       if (process.platform === "win32")
         abs = abs.replace(/\\/g, "/");
       return abs;
     }
-    function isIgnored(self2, path6) {
+    function isIgnored(self2, path10) {
       if (!self2.ignore.length)
         return false;
       return self2.ignore.some(function(item) {
-        return item.matcher.match(path6) || !!(item.gmatcher && item.gmatcher.match(path6));
+        return item.matcher.match(path10) || !!(item.gmatcher && item.gmatcher.match(path10));
       });
     }
-    function childrenIgnored(self2, path6) {
+    function childrenIgnored(self2, path10) {
       if (!self2.ignore.length)
         return false;
       return self2.ignore.some(function(item) {
-        return !!(item.gmatcher && item.gmatcher.match(path6));
+        return !!(item.gmatcher && item.gmatcher.match(path10));
       });
     }
   }
@@ -9353,7 +9353,7 @@ var require_sync = __commonJS({
     var Minimatch = minimatch.Minimatch;
     var Glob = require_glob().Glob;
     var util = require("util");
-    var path5 = require("path");
+    var path9 = require("path");
     var assert = require("assert");
     var isAbsolute = require_path_is_absolute();
     var common = require_common();
@@ -9482,7 +9482,7 @@ var require_sync = __commonJS({
               e = prefix + e;
           }
           if (e.charAt(0) === "/" && !this.nomount) {
-            e = path5.join(this.root, e);
+            e = path9.join(this.root, e);
           }
           this._emitMatch(index, e);
         }
@@ -9633,9 +9633,9 @@ var require_sync = __commonJS({
       if (prefix && isAbsolute(prefix) && !this.nomount) {
         var trail = /[\/\\]$/.test(prefix);
         if (prefix.charAt(0) === "/") {
-          prefix = path5.join(this.root, prefix);
+          prefix = path9.join(this.root, prefix);
         } else {
-          prefix = path5.resolve(this.root, prefix);
+          prefix = path9.resolve(this.root, prefix);
           if (trail)
             prefix += "/";
         }
@@ -9827,7 +9827,7 @@ var require_glob = __commonJS({
     var Minimatch = minimatch.Minimatch;
     var inherits = require_inherits_browser();
     var EE = require("events").EventEmitter;
-    var path5 = require("path");
+    var path9 = require("path");
     var assert = require("assert");
     var isAbsolute = require_path_is_absolute();
     var globSync = require_sync();
@@ -10109,7 +10109,7 @@ var require_glob = __commonJS({
               e = prefix + e;
           }
           if (e.charAt(0) === "/" && !this.nomount) {
-            e = path5.join(this.root, e);
+            e = path9.join(this.root, e);
           }
           this._emitMatch(index, e);
         }
@@ -10298,9 +10298,9 @@ var require_glob = __commonJS({
       if (prefix && isAbsolute(prefix) && !this.nomount) {
         var trail = /[\/\\]$/.test(prefix);
         if (prefix.charAt(0) === "/") {
-          prefix = path5.join(this.root, prefix);
+          prefix = path9.join(this.root, prefix);
         } else {
-          prefix = path5.resolve(this.root, prefix);
+          prefix = path9.resolve(this.root, prefix);
           if (trail)
             prefix += "/";
         }
@@ -10377,8 +10377,8 @@ var require_glob = __commonJS({
 // node_modules/archiver-utils/file.js
 var require_file = __commonJS({
   "node_modules/archiver-utils/file.js"(exports, module2) {
-    var fs5 = require_graceful_fs();
-    var path5 = require("path");
+    var fs8 = require_graceful_fs();
+    var path9 = require("path");
     var flatten = require_lodash2();
     var difference = require_lodash3();
     var union = require_lodash4();
@@ -10403,8 +10403,8 @@ var require_file = __commonJS({
       return result;
     };
     file.exists = function() {
-      var filepath = path5.join.apply(path5, arguments);
-      return fs5.existsSync(filepath);
+      var filepath = path9.join.apply(path9, arguments);
+      return fs8.existsSync(filepath);
     };
     file.expand = function(...args) {
       var options = isPlainObject(args[0]) ? args.shift() : {};
@@ -10417,12 +10417,12 @@ var require_file = __commonJS({
       });
       if (options.filter) {
         matches = matches.filter(function(filepath) {
-          filepath = path5.join(options.cwd || "", filepath);
+          filepath = path9.join(options.cwd || "", filepath);
           try {
             if (typeof options.filter === "function") {
               return options.filter(filepath);
             } else {
-              return fs5.statSync(filepath)[options.filter]();
+              return fs8.statSync(filepath)[options.filter]();
             }
           } catch (e) {
             return false;
@@ -10434,7 +10434,7 @@ var require_file = __commonJS({
     file.expandMapping = function(patterns, destBase, options) {
       options = Object.assign({
         rename: function(destBase2, destPath) {
-          return path5.join(destBase2 || "", destPath);
+          return path9.join(destBase2 || "", destPath);
         }
       }, options);
       var files = [];
@@ -10442,14 +10442,14 @@ var require_file = __commonJS({
       file.expand(options, patterns).forEach(function(src) {
         var destPath = src;
         if (options.flatten) {
-          destPath = path5.basename(destPath);
+          destPath = path9.basename(destPath);
         }
         if (options.ext) {
           destPath = destPath.replace(/(\.[^\/]*)?$/, options.ext);
         }
         var dest = options.rename(destBase, destPath, options);
         if (options.cwd) {
-          src = path5.join(options.cwd, src);
+          src = path9.join(options.cwd, src);
         }
         dest = dest.replace(pathSeparatorRe, "/");
         src = src.replace(pathSeparatorRe, "/");
@@ -10530,8 +10530,8 @@ var require_file = __commonJS({
 // node_modules/archiver-utils/index.js
 var require_archiver_utils = __commonJS({
   "node_modules/archiver-utils/index.js"(exports, module2) {
-    var fs5 = require_graceful_fs();
-    var path5 = require("path");
+    var fs8 = require_graceful_fs();
+    var path9 = require("path");
     var nutil = require("util");
     var lazystream = require_lazystream();
     var normalizePath = require_normalize_path();
@@ -10579,7 +10579,7 @@ var require_archiver_utils = __commonJS({
     };
     utils.lazyReadStream = function(filepath) {
       return new lazystream.Readable(function() {
-        return fs5.createReadStream(filepath);
+        return fs8.createReadStream(filepath);
       });
     };
     utils.normalizeInputSource = function(source) {
@@ -10609,7 +10609,7 @@ var require_archiver_utils = __commonJS({
         callback = base;
         base = dirpath;
       }
-      fs5.readdir(dirpath, function(err, list) {
+      fs8.readdir(dirpath, function(err, list) {
         var i = 0;
         var file;
         var filepath;
@@ -10621,11 +10621,11 @@ var require_archiver_utils = __commonJS({
           if (!file) {
             return callback(null, results);
           }
-          filepath = path5.join(dirpath, file);
-          fs5.stat(filepath, function(err2, stats) {
+          filepath = path9.join(dirpath, file);
+          fs8.stat(filepath, function(err2, stats) {
             results.push({
               path: filepath,
-              relative: path5.relative(base, filepath).replace(/\\/g, "/"),
+              relative: path9.relative(base, filepath).replace(/\\/g, "/"),
               stats
             });
             if (stats && stats.isDirectory()) {
@@ -10809,7 +10809,7 @@ var require_buffer_list = __commonJS({
         }
       }, {
         key: "join",
-        value: function join4(s) {
+        value: function join7(s) {
           if (this.length === 0) return "";
           var p = this.head;
           var ret = "" + p.data;
@@ -12949,10 +12949,10 @@ var require_readable_browser3 = __commonJS({
 // node_modules/archiver/lib/core.js
 var require_core = __commonJS({
   "node_modules/archiver/lib/core.js"(exports, module2) {
-    var fs5 = require("fs");
+    var fs8 = require("fs");
     var glob = require_readdir_glob();
     var async = require_async();
-    var path5 = require("path");
+    var path9 = require("path");
     var util = require_archiver_utils();
     var inherits = require("util").inherits;
     var ArchiverError = require_error();
@@ -13013,7 +13013,7 @@ var require_core = __commonJS({
       data.sourcePath = filepath;
       task.data = data;
       this._entriesCount++;
-      if (data.stats && data.stats instanceof fs5.Stats) {
+      if (data.stats && data.stats instanceof fs8.Stats) {
         task = this._updateQueueTaskWithStats(task, data.stats);
         if (task) {
           if (data.stats.size) {
@@ -13184,7 +13184,7 @@ var require_core = __commonJS({
         callback();
         return;
       }
-      fs5.lstat(task.filepath, function(err, stats) {
+      fs8.lstat(task.filepath, function(err, stats) {
         if (this._state.aborted) {
           setImmediate(callback);
           return;
@@ -13227,10 +13227,10 @@ var require_core = __commonJS({
         task.data.sourceType = "buffer";
         task.source = Buffer.concat([]);
       } else if (stats.isSymbolicLink() && this._moduleSupports("symlink")) {
-        var linkPath = fs5.readlinkSync(task.filepath);
-        var dirName = path5.dirname(task.filepath);
+        var linkPath = fs8.readlinkSync(task.filepath);
+        var dirName = path9.dirname(task.filepath);
         task.data.type = "symlink";
-        task.data.linkname = path5.relative(dirName, path5.resolve(dirName, linkPath));
+        task.data.linkname = path9.relative(dirName, path9.resolve(dirName, linkPath));
         task.data.sourceType = "buffer";
         task.source = Buffer.concat([]);
       } else {
@@ -14847,8 +14847,8 @@ var require_compress_commons = __commonJS({
 // node_modules/zip-stream/node_modules/archiver-utils/file.js
 var require_file2 = __commonJS({
   "node_modules/zip-stream/node_modules/archiver-utils/file.js"(exports, module2) {
-    var fs5 = require_graceful_fs();
-    var path5 = require("path");
+    var fs8 = require_graceful_fs();
+    var path9 = require("path");
     var flatten = require_lodash2();
     var difference = require_lodash3();
     var union = require_lodash4();
@@ -14873,8 +14873,8 @@ var require_file2 = __commonJS({
       return result;
     };
     file.exists = function() {
-      var filepath = path5.join.apply(path5, arguments);
-      return fs5.existsSync(filepath);
+      var filepath = path9.join.apply(path9, arguments);
+      return fs8.existsSync(filepath);
     };
     file.expand = function(...args) {
       var options = isPlainObject(args[0]) ? args.shift() : {};
@@ -14887,12 +14887,12 @@ var require_file2 = __commonJS({
       });
       if (options.filter) {
         matches = matches.filter(function(filepath) {
-          filepath = path5.join(options.cwd || "", filepath);
+          filepath = path9.join(options.cwd || "", filepath);
           try {
             if (typeof options.filter === "function") {
               return options.filter(filepath);
             } else {
-              return fs5.statSync(filepath)[options.filter]();
+              return fs8.statSync(filepath)[options.filter]();
             }
           } catch (e) {
             return false;
@@ -14904,7 +14904,7 @@ var require_file2 = __commonJS({
     file.expandMapping = function(patterns, destBase, options) {
       options = Object.assign({
         rename: function(destBase2, destPath) {
-          return path5.join(destBase2 || "", destPath);
+          return path9.join(destBase2 || "", destPath);
         }
       }, options);
       var files = [];
@@ -14912,14 +14912,14 @@ var require_file2 = __commonJS({
       file.expand(options, patterns).forEach(function(src) {
         var destPath = src;
         if (options.flatten) {
-          destPath = path5.basename(destPath);
+          destPath = path9.basename(destPath);
         }
         if (options.ext) {
           destPath = destPath.replace(/(\.[^\/]*)?$/, options.ext);
         }
         var dest = options.rename(destBase, destPath, options);
         if (options.cwd) {
-          src = path5.join(options.cwd, src);
+          src = path9.join(options.cwd, src);
         }
         dest = dest.replace(pathSeparatorRe, "/");
         src = src.replace(pathSeparatorRe, "/");
@@ -15000,8 +15000,8 @@ var require_file2 = __commonJS({
 // node_modules/zip-stream/node_modules/archiver-utils/index.js
 var require_archiver_utils2 = __commonJS({
   "node_modules/zip-stream/node_modules/archiver-utils/index.js"(exports, module2) {
-    var fs5 = require_graceful_fs();
-    var path5 = require("path");
+    var fs8 = require_graceful_fs();
+    var path9 = require("path");
     var lazystream = require_lazystream();
     var normalizePath = require_normalize_path();
     var defaults = require_lodash();
@@ -15048,7 +15048,7 @@ var require_archiver_utils2 = __commonJS({
     };
     utils.lazyReadStream = function(filepath) {
       return new lazystream.Readable(function() {
-        return fs5.createReadStream(filepath);
+        return fs8.createReadStream(filepath);
       });
     };
     utils.normalizeInputSource = function(source) {
@@ -15076,7 +15076,7 @@ var require_archiver_utils2 = __commonJS({
         callback = base;
         base = dirpath;
       }
-      fs5.readdir(dirpath, function(err, list) {
+      fs8.readdir(dirpath, function(err, list) {
         var i = 0;
         var file;
         var filepath;
@@ -15088,11 +15088,11 @@ var require_archiver_utils2 = __commonJS({
           if (!file) {
             return callback(null, results);
           }
-          filepath = path5.join(dirpath, file);
-          fs5.stat(filepath, function(err2, stats) {
+          filepath = path9.join(dirpath, file);
+          fs8.stat(filepath, function(err2, stats) {
             results.push({
               path: filepath,
-              relative: path5.relative(base, filepath).replace(/\\/g, "/"),
+              relative: path9.relative(base, filepath).replace(/\\/g, "/"),
               stats
             });
             if (stats && stats.isDirectory()) {
@@ -16576,7 +16576,7 @@ __export(main_exports, {
   default: () => AudioPluginManager
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian5 = require("obsidian");
+var import_obsidian7 = require("obsidian");
 
 // src/types.ts
 var DEFAULT_SETTINGS = {
@@ -16713,7 +16713,7 @@ var AudioPluginManagerSettingTab = class extends import_obsidian.PluginSettingTa
 };
 
 // src/scanner.ts
-var import_obsidian2 = require("obsidian");
+var import_obsidian4 = require("obsidian");
 
 // src/zipManager.ts
 var fs = __toESM(require("fs"));
@@ -16807,149 +16807,58 @@ var ZipManager = class {
 };
 
 // src/scanner.ts
-var path3 = __toESM(require("path"));
-var fs3 = __toESM(require("fs"));
+var path7 = __toESM(require("path"));
+var fs6 = __toESM(require("fs"));
 
-// src/fileRenamer.ts
-var path2 = __toESM(require("path"));
+// src/services/fileScannerService.ts
 var fs2 = __toESM(require("fs"));
-var FileRenamer = class {
-  static parseFileName(fileName) {
-    const ext = path2.extname(fileName);
-    let baseName = path2.basename(fileName, ext);
-    const developerRegex = /^([^-]+?)(?:\s*[-_]\s*|\s+)/;
-    const platformRegex = /\s+(?:x64|x86|win(?:dows)?(?:64)?|mac|osx|linux)(?:\s*|$)/i;
-    const versionRegex = /\s+(?:v?(?:\d+\.\d+\.\d+|\d+\.\d+|\d+))(?:\s*|$)/i;
-    const suffixRegex = /\s+(?:installer|setup|full)(?:\s*|$)/i;
-    let developer = "";
-    let platform = "";
-    let version = "";
-    let suffix = "";
-    const developerMatch = baseName.match(developerRegex);
-    if (developerMatch) {
-      developer = developerMatch[1].trim();
-      baseName = baseName.slice(developerMatch[0].length);
-    }
-    const platformMatch = baseName.match(platformRegex);
-    if (platformMatch) {
-      platform = platformMatch[0].trim();
-      baseName = baseName.replace(platformRegex, " ");
-    }
-    const versionMatch = baseName.match(versionRegex);
-    if (versionMatch) {
-      version = versionMatch[0].trim();
-      baseName = baseName.replace(versionRegex, " ");
-    }
-    const suffixMatch = baseName.match(suffixRegex);
-    if (suffixMatch) {
-      suffix = suffixMatch[0].trim();
-      baseName = baseName.replace(suffixRegex, " ");
-    }
-    const pluginName = baseName.replace(/[\s-]+/g, " ").trim();
-    return {
-      developer,
-      pluginName,
-      platform,
-      version,
-      suffix,
-      extension: ext.toLowerCase()
-    };
+var path2 = __toESM(require("path"));
+var import_obsidian2 = require("obsidian");
+var FileScannerService = class {
+  constructor(settings) {
+    this.settings = settings;
   }
-  static normalizePluginFileName(parsedName, developerFolder) {
-    const developer = path2.basename(developerFolder);
-    let fileName = `${developer} - ${parsedName.pluginName}`;
-    if (parsedName.platform) fileName += ` ${parsedName.platform}`;
-    if (parsedName.version) fileName += ` ${parsedName.version}`;
-    return fileName + parsedName.extension.toLowerCase();
+  /**
+   * Checks if a file path should be omitted based on the configured folders to ignore.
+   * @param filePath The path to the file.
+   * @returns True if the file path should be omitted, false otherwise.
+   */
+  shouldOmitPath(filePath) {
+    return this.settings.foldersToIgnore.some(
+      (folder) => filePath.includes(`${path2.sep}${folder}${path2.sep}`) || filePath.endsWith(`${path2.sep}${folder}`)
+    );
   }
-  static normalizeImageName(fileName, pluginName) {
-    const ext = path2.extname(fileName).toLowerCase();
-    const cleanPluginName = pluginName.replace(/[^a-zA-Z0-9\s]/g, "").trim().replace(/\s+/g, "_");
-    const currentBaseName = path2.basename(fileName, ext).replace(/[^a-zA-Z0-9\s_-]/g, "").trim().replace(/\s+/g, "_").toLowerCase();
-    if (currentBaseName === cleanPluginName.toLowerCase()) {
-      return fileName;
-    }
-    let newName = `${cleanPluginName}${ext}`;
-    const dirPath = path2.dirname(fileName);
-    let counter = 1;
-    let finalPath = path2.join(dirPath, newName);
-    while (fs2.existsSync(finalPath)) {
-      newName = `${cleanPluginName}-${counter}${ext}`;
-      finalPath = path2.join(dirPath, newName);
-      counter++;
-    }
-    return newName;
-  }
-  static extractVersion(fileName) {
-    for (const pattern of this.VERSION_PATTERNS) {
-      const match = fileName.match(pattern);
-      if (match) {
-        return match[0];
+  /**
+   * Recursively finds all plugin files in a directory.
+   * @param dir The directory to search.
+   * @param files An array to store the found files.
+   */
+  findPluginFiles(dir, files) {
+    if (this.shouldOmitPath(dir)) return;
+    try {
+      const items = fs2.readdirSync(dir, { withFileTypes: true });
+      for (const item of items) {
+        const fullPath = path2.join(dir, item.name);
+        if (item.isDirectory()) {
+          this.findPluginFiles(fullPath, files);
+        } else if (item.isFile()) {
+          const ext = path2.extname(item.name).toLowerCase();
+          if (this.settings.extensions.includes(ext) && !this.shouldOmitPath(fullPath)) {
+            files.push(fullPath);
+          }
+        }
       }
+    } catch (error) {
+      console.error(`Error reading directory ${dir}:`, error);
+      new import_obsidian2.Notice(`Error reading directory ${dir}: ${error}`);
     }
-    return "";
   }
 };
-FileRenamer.VERSION_PATTERNS = [
-  /v?(\d+\.\d+\.\d+)/i,
-  // v1.0.0 o 1.0.0
-  /v?(\d+\.\d+)/i,
-  // v1.0 o 1.0
-  /v?(\d+)/i
-  // v1 o 1
-];
-FileRenamer.PLATFORM_PATTERN = /\s+(?:x64|x86|win(?:dows)?(?:64)?|mac|osx|linux)(?:\s*|$)/i;
-FileRenamer.SUFFIX_PATTERN = /\s+(?:installer|setup|full)(?:\s*|$)/i;
 
-// src/scanner.ts
-var IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
-var DOCUMENTATION_EXTENSIONS = [".md", ".pdf", ".txt"];
-var INSTALLER_EXTENSIONS = [".zip", ".exe", ".msi"];
-var DEVELOPER_LOG_FILENAME = "_developer_changes.log";
-var MARKDOWN_INDEX_FILENAME = "Plugins-Index.md";
-var PluginScanner = class {
-  constructor(settings, noteGenerator, statusBar) {
-    this.settings = settings;
-    this.noteGenerator = noteGenerator;
-    this.statusBar = statusBar;
-    this.stopRequested = false;
-    this.logCallback = null;
-    if (!fs3.existsSync(this.settings.mainFolder)) {
-      throw new Error(`La carpeta '${this.settings.mainFolder}' no existe.`);
-    }
-  }
-  /**
-   * Sets the callback function for logging messages.
-   * @param callback A function that accepts a string message.
-   */
-  setLogCallback(callback) {
-    this.logCallback = callback;
-  }
-  /**
-   * Logs a message to the console and displays a notice in Obsidian.
-   * @param message The message to log.
-   */
-  log(message) {
-    if (this.logCallback) {
-      this.logCallback(message);
-    }
-    console.log(message);
-    new import_obsidian2.Notice(message);
-  }
-  /**
-   * Checks if a file has already been processed and has the correct naming format.
-   * @param fileName The name of the file.
-   * @param developerName The name of the developer.
-   * @param pluginName The name of the plugin.
-   * @returns True if the file is already processed, false otherwise.
-   */
-  isFileAlreadyProcessed(fileName, developerName, pluginName) {
-    const hasCorrectSeparator = fileName.includes(" - ");
-    const hasNoUnderscores = !fileName.includes("_");
-    const versionMatch = fileName.match(/\d+(\.\d+)*\.[a-zA-Z]+$/);
-    const hasVersionAndExt = versionMatch !== null;
-    return hasCorrectSeparator && hasNoUnderscores && hasVersionAndExt;
-  }
+// src/services/fileNameParser.ts
+var path3 = __toESM(require("path"));
+var fs3 = __toESM(require("fs"));
+var FileNameParser = class {
   /**
    * Extracts the base name of a plugin from a file name.
    * @param fileName The name of the file.
@@ -16975,30 +16884,19 @@ var PluginScanner = class {
     return name.replace(/[\s-]+/g, " ").trim();
   }
   /**
-   * Normalizes a file name to follow a consistent naming convention.
-   * @param filePath The path to the file.
-   * @param developer The name of the developer.
-   * @param pluginName The name of the plugin.
-   * @returns The normalized file name.
-   */
-  normalizeFileName(filePath, developer, pluginName) {
-    const baseFileName = path3.basename(filePath);
-    const version = this.extractVersion(baseFileName);
-    const friendlyDeveloper = developer.replace(/_/g, " ").trim();
-    const cleanPluginName = this.cleanPluginName(pluginName, friendlyDeveloper, version);
-    const ext = path3.extname(baseFileName);
-    const finalName = cleanPluginName.toLowerCase().startsWith(friendlyDeveloper.toLowerCase()) ? `${cleanPluginName}${version}${ext}` : `${friendlyDeveloper} - ${cleanPluginName}${version}${ext}`;
-    return finalName;
-  }
-  /**
-   * Cleans a plugin name by removing developer name and version information.
-   * @param pluginName The plugin name to clean.
-   * @param friendlyDeveloper The cleaned developer name.
-   * @param version The version string.
-   * @returns The cleaned plugin name.
-   */
-  cleanPluginName(pluginName, friendlyDeveloper, version) {
-    return pluginName.replace(new RegExp(`^${friendlyDeveloper}\\s*[-_]\\s*`, "i"), "").replace(new RegExp(`\\s*${version}\\s*`, "i"), "").replace(new RegExp(`^${friendlyDeveloper}\\s+${friendlyDeveloper}\\s*`, "i"), friendlyDeveloper).trim();
+  * Cleans a plugin name by removing developer name, version information, and duplicate words.
+  * @param pluginName The plugin name to clean.
+  * @param developerName The cleaned developer name.
+  * @param version The version string.
+  * @returns The cleaned plugin name.
+  */
+  cleanPluginName(pluginName, developerName, version) {
+    let cleanName = pluginName.replace(new RegExp(`^${developerName}\\s*[-_]\\s*`, "i"), "");
+    cleanName = cleanName.replace(new RegExp(`\\s*${version}\\s*`, "i"), "");
+    const duplicateDevPattern = new RegExp(`\\b${developerName}\\s+${developerName}\\b`, "i");
+    cleanName = cleanName.replace(duplicateDevPattern, developerName);
+    cleanName = cleanName.replace(/\b(\w+)\s+\1\b/gi, "$1");
+    return cleanName.trim();
   }
   /**
    * Extracts the version number from a file name.
@@ -17019,113 +16917,6 @@ var PluginScanner = class {
       }
     }
     return "";
-  }
-  /**
-   * Processes a single file, renaming it if necessary.
-   * @param filePath The path to the file.
-   * @param developerPath The path to the developer directory.
-   * @param pluginName The name of the plugin.
-   * @returns The new path of the file, or the original path if renaming fails or is not needed.
-   */
-  async processFile(filePath, developerPath, pluginName) {
-    const currentFileName = path3.basename(filePath);
-    const parsedName = FileRenamer.parseFileName(currentFileName);
-    const newFileName = FileRenamer.normalizePluginFileName(parsedName, developerPath);
-    if (currentFileName === newFileName) {
-      this.log(`File name unchanged (already correct): ${currentFileName}`);
-      return filePath;
-    }
-    const newPath = path3.join(developerPath, newFileName);
-    try {
-      await fs3.promises.access(developerPath, fs3.constants.W_OK);
-      await fs3.promises.rename(filePath, newPath);
-      this.log(`Renamed: ${currentFileName} -> ${newFileName}`);
-      return newPath;
-    } catch (error) {
-      if (error.code === "EACCES") {
-        throw new Error(`No write permission in directory: ${developerPath}`);
-      }
-      console.error(`Error renaming file ${filePath}:`, error);
-      return filePath;
-    }
-  }
-  /**
-   * Requests the plugin scanner to stop processing.
-   */
-  requestStop() {
-    this.stopRequested = true;
-  }
-  /**
-   * Resets the stop request, allowing the plugin scanner to continue processing.
-   */
-  resetStop() {
-    this.stopRequested = false;
-  }
-  /**
-   * Exports a list of plugins to a zip file.
-   * @param pluginPaths An array of plugin paths to include in the zip file.
-   * @param outputPath The path to save the zip file.
-   */
-  async exportPluginsAsZip(pluginPaths, outputPath) {
-    try {
-      await ZipManager.createZipFile(outputPath, pluginPaths, this.statusBar);
-      new import_obsidian2.Notice(`Plugins exported successfully to ${outputPath}`);
-    } catch (error) {
-      console.error("Error exporting plugins:", error);
-      new import_obsidian2.Notice(`Error exporting plugins: ${error.message}`);
-    }
-  }
-  /**
-   * Checks if a file path should be omitted based on the configured folders to ignore.
-   * @param filePath The path to the file.
-   * @returns True if the file path should be omitted, false otherwise.
-   */
-  shouldOmitPath(filePath) {
-    return this.settings.foldersToIgnore.some(
-      (folder) => filePath.includes(`${path3.sep}${folder}${path3.sep}`) || filePath.endsWith(`${path3.sep}${folder}`)
-    );
-  }
-  /**
-   * Recursively finds all plugin files in a directory.
-   * @param dir The directory to search.
-   * @param files An array to store the found files.
-   */
-  findPluginFiles(dir, files) {
-    if (this.shouldOmitPath(dir)) return;
-    try {
-      const items = fs3.readdirSync(dir, { withFileTypes: true });
-      for (const item of items) {
-        const fullPath = path3.join(dir, item.name);
-        if (item.isDirectory()) {
-          this.findPluginFiles(fullPath, files);
-        } else if (item.isFile()) {
-          const ext = path3.extname(item.name).toLowerCase();
-          if (this.settings.extensions.includes(ext) && !this.shouldOmitPath(fullPath)) {
-            files.push(fullPath);
-          }
-        }
-      }
-    } catch (error) {
-      console.error(`Error reading directory ${dir}:`, error);
-      new import_obsidian2.Notice(`Error reading directory ${dir}: ${error}`);
-    }
-  }
-  /**
-   * Creates a log entry for a developer.
-   * @param developerPath The path to the developer directory.
-   * @param logEntry The log entry to write.
-   */
-  async createDeveloperLog(developerPath, logEntry) {
-    const logFilePath = path3.join(developerPath, DEVELOPER_LOG_FILENAME);
-    const timestamp = (/* @__PURE__ */ new Date()).toISOString();
-    const logLine = `[${timestamp}] ${logEntry}
-`;
-    try {
-      await fs3.promises.appendFile(logFilePath, logLine);
-    } catch (error) {
-      console.error(`Error writing to developer log: ${error}`);
-      new import_obsidian2.Notice(`Error writing to developer log: ${error}`);
-    }
   }
   /**
    * Normalizes an image name to follow a consistent naming convention.
@@ -17151,124 +16942,58 @@ var PluginScanner = class {
     }
     return newName;
   }
-  parseFileName(fileName) {
-    const ext = path3.extname(fileName);
-    let baseName = path3.basename(fileName, ext);
-    const developerRegex = /^([^-]+?)(?:\s*[-_]\s*|\s+)/;
-    const versionRegex = /\s+(?:v?[\d.]+|v\d+)(?:\s*|$)/i;
-    const platformRegex = /\s+(?:x64|x86|win(?:dows)?(?:64)?|mac|osx|linux)(?:\s*|$)/i;
-    const suffixRegex = /\s+(?:installer|setup|full)(?:\s*|$)/i;
-    const developerMatch = baseName.match(developerRegex);
-    const developer = developerMatch ? developerMatch[1].trim() : "";
-    baseName = baseName.replace(developerRegex, "");
-    const versionMatch = baseName.match(versionRegex);
-    const version = versionMatch ? versionMatch[0].trim() : "";
-    baseName = baseName.replace(versionRegex, "");
-    const platformMatch = baseName.match(platformRegex);
-    const platform = platformMatch ? platformMatch[0].trim() : "";
-    baseName = baseName.replace(platformRegex, "");
-    const suffixMatch = baseName.match(suffixRegex);
-    const suffix = suffixMatch ? suffixMatch[0].trim() : "";
-    baseName = baseName.replace(suffixRegex, "");
-    return {
-      developer,
-      pluginName: baseName.trim(),
-      platform,
-      version,
-      suffix,
-      extension: ext.toLowerCase()
-    };
-  }
-  normalizePluginFileName(parsedName, developerFolder) {
-    const developer = path3.basename(developerFolder);
-    let fileName = `${developer} - ${parsedName.pluginName}`;
-    if (parsedName.platform) fileName += ` ${parsedName.platform}`;
-    if (parsedName.version) fileName += ` ${parsedName.version}`;
-    return fileName + parsedName.extension.toLowerCase();
-  }
-  /**
-   * Processes all files for a given plugin.
-   * @param pluginFiles An array of file paths to process.
-   * @param developerPath The path to the developer directory.
-   * @param pluginName The name of the plugin.
-   * @returns An array of processed file paths.
-   */
-  async processAllFiles(pluginFiles, developerPath, pluginName) {
-    const results = await Promise.allSettled(
-      pluginFiles.map((file) => this.processFile(file, developerPath, pluginName))
-    );
-    const processedFiles = [];
-    results.forEach((result) => {
-      if (result.status === "fulfilled") {
-        processedFiles.push(result.value);
-      } else {
-        console.error(`Error processing file: ${result.reason}`);
-      }
-    });
-    return processedFiles;
-  }
+};
+
+// src/services/pluginCategorizer.ts
+var path4 = __toESM(require("path"));
+var DOCUMENTATION_EXTENSIONS = [".md", ".pdf", ".txt"];
+var IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp"];
+var INSTALLER_EXTENSIONS = [".zip", ".exe", ".msi"];
+var PluginCategorizer = class {
   /**
    * Categorizes files into different types (documentation, images, other).
    * @param files An array of file paths to categorize.
    * @param pluginName The name of the plugin.
-   * @param developerPath The path to the developer directory.
    * @returns A PluginFiles object containing categorized files.
    */
-  async categorizeFiles(files, pluginName, developerPath) {
+  categorizeFiles(files) {
     const result = {
       documentationFiles: [],
       imageFiles: [],
       otherFiles: []
     };
-    const pluginFiles = files.filter((file) => INSTALLER_EXTENSIONS.includes(path3.extname(file).toLowerCase()));
+    const pluginFiles = files.filter((file) => INSTALLER_EXTENSIONS.includes(path4.extname(file).toLowerCase()));
     for (const file of pluginFiles) {
-      const ext = path3.extname(file).toLowerCase();
+      const ext = path4.extname(file).toLowerCase();
       if (ext === ".zip") {
         result.zipFile = file;
       } else if (ext === ".exe" || ext === ".msi") {
         result.executableFile = file;
       }
     }
-    const pluginBaseNames = pluginFiles.map(
-      (file) => this.getPluginBaseName(path3.basename(file)).toLowerCase().replace(/[^a-zA-Z0-9\s]/g, "").trim()
-    );
     for (const file of files) {
-      const ext = path3.extname(file).toLowerCase();
-      const fileName = path3.basename(file);
+      const ext = path4.extname(file).toLowerCase();
       if (pluginFiles.includes(file)) {
         continue;
       } else if (DOCUMENTATION_EXTENSIONS.includes(ext)) {
         result.documentationFiles.push(file);
       } else if (IMAGE_EXTENSIONS.includes(ext)) {
-        const imageBaseName = path3.basename(fileName, ext).toLowerCase().replace(/[^a-zA-Z0-9\s]/g, "").trim();
-        const matchingPlugin = pluginBaseNames.find(
-          (pluginName2) => imageBaseName.includes(pluginName2)
-        );
-        if (matchingPlugin) {
-          const normalizedImageName = this.normalizeImageName(fileName, matchingPlugin);
-          const dirPath = path3.dirname(file);
-          const newImagePath = path3.join(dirPath, normalizedImageName);
-          if (fileName === normalizedImageName) {
-            this.log(`Image name unchanged (already correct): ${fileName}`);
-            result.imageFiles.push(file);
-          } else {
-            try {
-              fs3.renameSync(file, newImagePath);
-              result.imageFiles.push(newImagePath);
-              this.log(`Renamed image: ${fileName} -> ${normalizedImageName}`);
-            } catch (error) {
-              console.error(`Error renaming image file: ${error}`);
-              result.imageFiles.push(file);
-            }
-          }
-        } else {
-          result.imageFiles.push(file);
-        }
+        result.imageFiles.push(file);
       } else {
         result.otherFiles.push(file);
       }
     }
     return result;
+  }
+};
+
+// src/services/markdownGenerator.ts
+var path5 = __toESM(require("path"));
+var fs4 = __toESM(require("fs"));
+var import_obsidian3 = require("obsidian");
+var MarkdownGenerator = class {
+  constructor(settings) {
+    this.settings = settings;
   }
   /**
    * Creates a Markdown index file for all plugins.
@@ -17277,7 +17002,7 @@ var PluginScanner = class {
    */
   async createMarkdownIndex(allPlugins) {
     try {
-      const markdownPath = path3.join(this.settings.mainFolder, "../Desarrolladores/Index.md");
+      const markdownPath = path5.join(this.settings.mainFolder, "../Desarrolladores/Index.md");
       let markdownContent = `# \xCDndice de Plugins de Audio
 
 `;
@@ -17313,23 +17038,23 @@ var PluginScanner = class {
 `;
           if (files.imageFiles.length > 0) {
             const firstImage = files.imageFiles[0];
-            markdownContent += `![[Desarrolladores/${developer}/${path3.basename(firstImage)}]]
+            markdownContent += `![[Desarrolladores/${developer}/${path5.basename(firstImage)}]]
 
 `;
           }
           if (files.zipFile) {
-            markdownContent += `- \u{1F4E6} [[Desarrolladores/${developer}/${path3.basename(files.zipFile)}|Archivo ZIP]]
+            markdownContent += `- \u{1F4E6} [[Desarrolladores/${developer}/${path5.basename(files.zipFile)}|Archivo ZIP]]
 `;
           }
           if (files.executableFile) {
-            markdownContent += `- \u2699\uFE0F [[Desarrolladores/${developer}/${path3.basename(files.executableFile)}|Instalador]]
+            markdownContent += `- \u2699\uFE0F [[Desarrolladores/${developer}/${path5.basename(files.executableFile)}|Instalador]]
 `;
           }
           if (files.documentationFiles.length > 0) {
             markdownContent += `- \u{1F4DA} Documentaci\xF3n:
 `;
             for (const doc of files.documentationFiles) {
-              markdownContent += `  - [[Desarrolladores/${developer}/${path3.basename(doc)}|${path3.basename(doc)}]]
+              markdownContent += `  - [[Desarrolladores/${developer}/${path5.basename(doc)}|${path5.basename(doc)}]]
 `;
             }
           }
@@ -17337,7 +17062,7 @@ var PluginScanner = class {
             markdownContent += `- \u{1F4C4} Otros archivos:
 `;
             for (const other of files.otherFiles) {
-              markdownContent += `  - [[Desarrolladores/${developer}/${path3.basename(other)}|${path3.basename(other)}]]
+              markdownContent += `  - [[Desarrolladores/${developer}/${path5.basename(other)}|${path5.basename(other)}]]
 `;
             }
           }
@@ -17347,17 +17072,162 @@ var PluginScanner = class {
 `;
         }
       }
-      const dir = path3.dirname(markdownPath);
-      if (!fs3.existsSync(dir)) {
-        fs3.mkdirSync(dir, { recursive: true });
+      const dir = path5.dirname(markdownPath);
+      if (!fs4.existsSync(dir)) {
+        fs4.mkdirSync(dir, { recursive: true });
       }
-      await fs3.promises.writeFile(markdownPath, markdownContent, "utf8");
-      this.log(`\xCDndice Markdown generado: ${markdownPath}`);
+      await fs4.promises.writeFile(markdownPath, markdownContent, "utf8");
+      console.log(`\xCDndice Markdown generado: ${markdownPath}`);
       return markdownPath;
     } catch (error) {
       console.error("Error creating markdown index:", error);
-      new import_obsidian2.Notice(`Error creating markdown index: ${error}`);
+      new import_obsidian3.Notice(`Error creating markdown index: ${error}`);
       throw error;
+    }
+  }
+};
+
+// src/services/pluginProcessor.ts
+var path6 = __toESM(require("path"));
+var fs5 = __toESM(require("fs"));
+var PluginProcessor = class {
+  constructor(settings, log) {
+    this.settings = settings;
+    this.fileNameParser = new FileNameParser();
+    this.log = log;
+  }
+  /**
+   * Processes a single file, renaming it if necessary.
+   * @param filePath The path to the file.
+   * @param developerPath The path to the developer directory.
+   * @param pluginName The name of the plugin.
+   * @returns The new path of the file, or the original path if renaming fails or is not needed.
+   */
+  async processFile(filePath, developerPath, pluginName) {
+    const currentFileName = path6.basename(filePath);
+    const developer = path6.basename(developerPath);
+    const version = this.fileNameParser.extractVersion(currentFileName);
+    const cleanedPluginName = this.fileNameParser.cleanPluginName(pluginName, developer, version);
+    const ext = path6.extname(filePath);
+    const newFileName = cleanedPluginName.toLowerCase().startsWith(developer.toLowerCase()) ? `${cleanedPluginName}${version}${ext}` : `${developer} - ${cleanedPluginName}${version}${ext}`;
+    if (currentFileName === newFileName) {
+      this.log(`File name unchanged (already correct): ${currentFileName}`);
+      return filePath;
+    }
+    const newPath = path6.join(developerPath, newFileName);
+    try {
+      await fs5.promises.access(developerPath, fs5.constants.W_OK);
+      await fs5.promises.rename(filePath, newPath);
+      this.log(`Renamed: ${currentFileName} -> ${newFileName}`);
+      return newPath;
+    } catch (error) {
+      if (error.code === "EACCES") {
+        throw new Error(`No write permission in directory: ${developerPath}`);
+      }
+      console.error(`Error renaming file ${filePath}:`, error);
+      return filePath;
+    }
+  }
+  /**
+   * Processes all files for a given plugin.
+   * @param pluginFiles An array of file paths to process.
+   * @param developerPath The path to the developer directory.
+   * @param pluginName The name of the plugin.
+   * @returns An array of processed file paths.
+   */
+  async processAllFiles(pluginFiles, developerPath, pluginName) {
+    const results = await Promise.allSettled(
+      pluginFiles.map((file) => this.processFile(file, developerPath, pluginName))
+    );
+    const processedFiles = [];
+    results.forEach((result) => {
+      if (result.status === "fulfilled") {
+        processedFiles.push(result.value);
+      } else {
+        console.error(`Error processing file: ${result.reason}`);
+      }
+    });
+    return processedFiles;
+  }
+};
+
+// src/scanner.ts
+var DEVELOPER_LOG_FILENAME = "_developer_changes.log";
+var MARKDOWN_INDEX_FILENAME = "Plugins-Index.md";
+var PluginScanner = class {
+  constructor(settings, noteGenerator, statusBar) {
+    this.settings = settings;
+    this.noteGenerator = noteGenerator;
+    this.statusBar = statusBar;
+    this.stopRequested = false;
+    this.logCallback = null;
+    this.fileScannerService = new FileScannerService(settings);
+    this.fileNameParser = new FileNameParser();
+    this.pluginCategorizer = new PluginCategorizer();
+    this.markdownGenerator = new MarkdownGenerator(settings);
+    this.pluginProcessor = new PluginProcessor(settings, this.log.bind(this));
+    if (!fs6.existsSync(this.settings.mainFolder)) {
+      throw new Error(`La carpeta '${this.settings.mainFolder}' no existe.`);
+    }
+  }
+  /**
+   * Sets the callback function for logging messages.
+   * @param callback A function that accepts a string message.
+   */
+  setLogCallback(callback) {
+    this.logCallback = callback;
+  }
+  /**
+   * Logs a message to the console and displays a notice in Obsidian.
+   * @param message The message to log.
+   */
+  log(message) {
+    if (this.logCallback) {
+      this.logCallback(message);
+    }
+    console.log(message);
+    new import_obsidian4.Notice(message);
+  }
+  /**
+   * Requests the plugin scanner to stop processing.
+   */
+  requestStop() {
+    this.stopRequested = true;
+  }
+  /**
+   * Resets the stop request, allowing the plugin scanner to continue processing.
+   */
+  resetStop() {
+    this.stopRequested = false;
+  }
+  /**
+   * Exports a list of plugins to a zip file.
+   * @param pluginPaths An array of plugin paths to include in the zip file.
+   * @param outputPath The path to save the zip file.
+   */
+  async exportPluginsAsZip(pluginPaths, outputPath) {
+    try {
+      await ZipManager.createZipFile(outputPath, pluginPaths, this.statusBar);
+      new import_obsidian4.Notice(`Plugins exported successfully to ${outputPath}`);
+    } catch (error) {
+      console.error("Error exporting plugins:", error);
+      new import_obsidian4.Notice(`Error exporting plugins: ${error.message}`);
+    }
+  }
+  /**
+   * Creates a log file in the developer's folder to track file renaming operations.
+   * @param developerPath The path to the developer's folder.
+   * @param logContent The content to write to the log file.
+   */
+  async createDeveloperLog(developerPath, logContent) {
+    const logPath = path7.join(developerPath, DEVELOPER_LOG_FILENAME);
+    try {
+      fs6.appendFileSync(logPath, `${(/* @__PURE__ */ new Date()).toLocaleString()} - ${logContent}
+`, "utf8");
+      this.log(`Developer log created: ${logPath}`);
+    } catch (error) {
+      console.error(`Error creating developer log: ${logPath}`, error);
+      new import_obsidian4.Notice(`Error creating developer log: ${error.message}`);
     }
   }
   /**
@@ -17366,23 +17236,20 @@ var PluginScanner = class {
    * @returns A ScanResults object containing statistics about the scan.
    */
   async scanAndProcessPlugins(onProgress) {
-    let developersProcessed = 0;
-    let pluginsCompressed = 0;
-    let zipsCreated = 0;
-    const developerFolders = fs3.readdirSync(this.settings.mainFolder, { withFileTypes: true }).filter((dirent) => dirent.isDirectory()).map((dirent) => path3.join(this.settings.mainFolder, dirent.name));
+    const developerFolders = fs6.readdirSync(this.settings.mainFolder, { withFileTypes: true }).filter((dirent) => dirent.isDirectory()).map((dirent) => path7.join(this.settings.mainFolder, dirent.name));
     const allPlugins = /* @__PURE__ */ new Map();
     for (const developerPath of developerFolders) {
       if (this.stopRequested) {
         this.log("Scan stopped by user.");
         break;
       }
-      const developerName = path3.basename(developerPath);
+      const developerName = path7.basename(developerPath);
       const developerPlugins = {};
       const files = [];
-      this.findPluginFiles(developerPath, files);
+      this.fileScannerService.findPluginFiles(developerPath, files);
       const pluginsGrouped = {};
       for (const file of files) {
-        const baseName = this.getPluginBaseName(path3.basename(file), developerName);
+        const baseName = this.fileNameParser.getPluginBaseName(path7.basename(file), developerName);
         if (!pluginsGrouped[baseName]) {
           pluginsGrouped[baseName] = [];
         }
@@ -17391,13 +17258,13 @@ var PluginScanner = class {
       for (const pluginName of Object.keys(pluginsGrouped)) {
         if (this.stopRequested) break;
         const pluginFiles = pluginsGrouped[pluginName];
-        const processedFiles = await this.processAllFiles(pluginFiles, developerPath, pluginName);
-        developerPlugins[pluginName] = await this.categorizeFiles(processedFiles, pluginName, developerPath);
+        const processedFiles = await this.pluginProcessor.processAllFiles(pluginFiles, developerPath, pluginName);
+        developerPlugins[pluginName] = this.pluginCategorizer.categorizeFiles(processedFiles);
         await this.createDeveloperLog(
           developerPath,
           `Processed plugin: ${pluginName}
   Files processed: ${pluginFiles.length}
-  Files renamed: ${pluginFiles.map((f) => path3.basename(f)).join(", ")}`
+  Files renamed: ${pluginFiles.map((f) => path7.basename(f)).join(", ")}`
         );
       }
       allPlugins.set(developerName, developerPlugins);
@@ -17406,15 +17273,15 @@ var PluginScanner = class {
         onProgress(progress);
       }
     }
-    await this.createMarkdownIndex(allPlugins);
-    const jsonPath = path3.join(this.settings.mainFolder, "plugins-data.json");
-    fs3.writeFileSync(jsonPath, JSON.stringify(Array.from(allPlugins.entries()), null, 2), "utf8");
+    await this.markdownGenerator.createMarkdownIndex(allPlugins);
+    const jsonPath = path7.join(this.settings.mainFolder, "plugins-data.json");
+    fs6.writeFileSync(jsonPath, JSON.stringify(Array.from(allPlugins.entries()), null, 2), "utf8");
     try {
-      await this.noteGenerator.importMarkdownIndex(path3.join(this.settings.mainFolder, MARKDOWN_INDEX_FILENAME));
-      new import_obsidian2.Notice("Plugin index imported to your vault");
+      await this.noteGenerator.importMarkdownIndex(path7.join(this.settings.mainFolder, MARKDOWN_INDEX_FILENAME));
+      new import_obsidian4.Notice("Plugin index imported to your vault");
     } catch (error) {
       console.error("Error importing markdown index:", error);
-      new import_obsidian2.Notice(`Error importing index: ${error.message}`);
+      new import_obsidian4.Notice(`Error importing index: ${error.message}`);
     }
     return {
       developers: allPlugins.size,
@@ -17426,9 +17293,9 @@ var PluginScanner = class {
 };
 
 // src/noteGenerator.ts
-var import_obsidian3 = require("obsidian");
-var fs4 = __toESM(require("fs"));
-var path4 = __toESM(require("path"));
+var import_obsidian5 = require("obsidian");
+var fs7 = __toESM(require("fs"));
+var path8 = __toESM(require("path"));
 var NoteGenerator = class {
   constructor(app, settings) {
     this.app = app;
@@ -17438,15 +17305,15 @@ var NoteGenerator = class {
     try {
       let notePath;
       if (this.settings.saveNotesInPluginFolder) {
-        const developerFolder = path4.dirname(pluginInfo.filePath);
-        notePath = path4.join(developerFolder, `${pluginName}.md`);
+        const developerFolder = path8.dirname(pluginInfo.filePath);
+        notePath = path8.join(developerFolder, `${pluginName}.md`);
       } else {
         const basePath = this.app.vault.adapter.basePath || "";
-        const notesFolder = path4.join(basePath, this.settings.notesFolder);
-        if (!fs4.existsSync(notesFolder)) {
-          fs4.mkdirSync(notesFolder, { recursive: true });
+        const notesFolder = path8.join(basePath, this.settings.notesFolder);
+        if (!fs7.existsSync(notesFolder)) {
+          fs7.mkdirSync(notesFolder, { recursive: true });
         }
-        notePath = path4.join(notesFolder, `${pluginName}.md`);
+        notePath = path8.join(notesFolder, `${pluginName}.md`);
       }
       let noteContent = `---
 type: plugin
@@ -17464,25 +17331,25 @@ Plugin de audio de ${pluginInfo.developer}.
 
 `;
       for (const file of pluginFiles) {
-        noteContent += `- ${path4.basename(file)}
+        noteContent += `- ${path8.basename(file)}
 `;
       }
-      fs4.writeFileSync(notePath, noteContent, "utf8");
+      fs7.writeFileSync(notePath, noteContent, "utf8");
     } catch (error) {
       console.error("Error creating plugin note:", error);
     }
   }
   async importMarkdownIndex(indexPath) {
     try {
-      if (fs4.existsSync(indexPath)) {
-        const content = fs4.readFileSync(indexPath, "utf8");
+      if (fs7.existsSync(indexPath)) {
+        const content = fs7.readFileSync(indexPath, "utf8");
         const vaultPath = "Audio Plugins/Index.md";
-        const dir = path4.dirname(vaultPath);
+        const dir = path8.dirname(vaultPath);
         if (!this.app.vault.getAbstractFileByPath(dir)) {
           await this.app.vault.createFolder(dir);
         }
         const existingFile = this.app.vault.getAbstractFileByPath(vaultPath);
-        if (existingFile instanceof import_obsidian3.TFile) {
+        if (existingFile instanceof import_obsidian5.TFile) {
           await this.app.vault.modify(existingFile, content);
         } else {
           await this.app.vault.create(vaultPath, content);
@@ -17531,9 +17398,9 @@ var StatusBar = class {
 };
 
 // src/ui/view.ts
-var import_obsidian4 = require("obsidian");
+var import_obsidian6 = require("obsidian");
 var AUDIO_PLUGIN_VIEW = "audio-plugin-view";
-var AudioPluginView = class extends import_obsidian4.ItemView {
+var AudioPluginView = class extends import_obsidian6.ItemView {
   constructor(leaf, plugin) {
     super(leaf);
     this.plugin = plugin;
@@ -17558,7 +17425,7 @@ var AudioPluginView = class extends import_obsidian4.ItemView {
 };
 
 // src/main.ts
-var AudioPluginManager = class extends import_obsidian5.Plugin {
+var AudioPluginManager = class extends import_obsidian7.Plugin {
   async onload() {
     await this.loadSettings();
     this.statusBar = new StatusBar(this);
@@ -17604,7 +17471,7 @@ var AudioPluginManager = class extends import_obsidian5.Plugin {
     } else {
       workspace.revealLeaf(leaf);
     }
-    new import_obsidian5.Notice("Audio Plugin Manager activated!");
+    new import_obsidian7.Notice("Audio Plugin Manager activated!");
   }
   updateStatusBar() {
     this.statusBar.update(this.settings.lastScanDate);
@@ -17617,23 +17484,23 @@ var AudioPluginManager = class extends import_obsidian5.Plugin {
   async scanPlugins(onProgress) {
     try {
       if (!this.settings.mainFolder) {
-        new import_obsidian5.Notice("Please set the main folder in settings first");
+        new import_obsidian7.Notice("Please set the main folder in settings first");
         return { developers: 0, plugins: 0, zips: 0, stopped: false };
       }
-      new import_obsidian5.Notice("Scanning audio plugins...");
+      new import_obsidian7.Notice("Scanning audio plugins...");
       const results = await this.pluginScanner.scanAndProcessPlugins(onProgress);
       if (!results.stopped) {
         this.settings.lastScanDate = (/* @__PURE__ */ new Date()).toLocaleString();
         await this.saveSettings();
         this.updateStatusBar();
       }
-      new import_obsidian5.Notice(
+      new import_obsidian7.Notice(
         results.stopped ? "Scan stopped by user" : `Scan complete! Found ${results.plugins} plugins from ${results.developers} developers`
       );
       return results;
     } catch (error) {
       console.error("Error scanning plugins:", error);
-      new import_obsidian5.Notice(`Error scanning plugins: ${error.message}`);
+      new import_obsidian7.Notice(`Error scanning plugins: ${error.message}`);
       return { developers: 0, plugins: 0, zips: 0, stopped: false };
     }
   }

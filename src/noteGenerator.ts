@@ -1,3 +1,9 @@
+/**
+ * Esta clase proporciona métodos para generar notas en el vault de Obsidian.
+ * Incluye funcionalidades para:
+ * - `createPluginNote`: Crea una nota para un plugin específico con información y lista de archivos.
+ * - `importMarkdownIndex`: Importa un índice Markdown existente al vault de Obsidian.
+ */
 // noteGenerator.ts
 import { App, TFile } from 'obsidian';
 import { PluginInfo, AudioPluginManagerSettings } from './types';

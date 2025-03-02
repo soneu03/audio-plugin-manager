@@ -1,4 +1,10 @@
 // settings.ts
+/**
+ * Esta clase define la pestaña de configuración del plugin Audio Plugin Manager.
+ * Incluye funcionalidades para:
+ * - `display`: Muestra la interfaz de configuración del plugin.
+ * - `updateLog`: Agrega una entrada al registro de acciones.
+ */
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import AudioPluginManager from './main';
 

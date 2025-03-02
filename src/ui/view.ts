@@ -1,3 +1,11 @@
+/**
+ * Esta clase define la vista del plugin Audio Plugin Manager.
+ * Incluye funcionalidades para:
+ * - `getViewType`: Obtiene el tipo de vista.
+ * - `getDisplayText`: Obtiene el texto a mostrar en la pestaña de la vista.
+ * - `onOpen`: Se ejecuta al abrir la vista, creando la interfaz de usuario.
+ * - `onClose`: Se ejecuta al cerrar la vista, realizando tareas de limpieza si es necesario.
+ */
 // ui/view.ts
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import AudioPluginManager from '../main';

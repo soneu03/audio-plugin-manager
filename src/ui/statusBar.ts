@@ -1,3 +1,10 @@
+/**
+ * Esta clase proporciona métodos para gestionar la barra de estado del plugin.
+ * Incluye funcionalidades para:
+ * - `update`: Actualiza el texto de la barra de estado.
+ * - `showProgress`: Muestra el progreso de una tarea en la barra de estado.
+ * - `finishProgress`: Finaliza el modo de progreso y restaura el texto predeterminado o muestra un mensaje final.
+ */
 // ui/statusBar.ts
 import { Plugin } from 'obsidian';
 

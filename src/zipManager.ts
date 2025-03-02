@@ -1,4 +1,10 @@
 // zipManager.ts
+/**
+ * Esta clase proporciona métodos para gestionar la creación de archivos ZIP.
+ * Incluye funcionalidades para:
+ * - `createZipFile`: Crea un archivo ZIP con los archivos proporcionados.
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import archiver from 'archiver';
