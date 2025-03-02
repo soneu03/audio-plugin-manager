@@ -36,3 +36,24 @@ export interface ScanResults {
   zips: number;
   stopped: boolean;  // Nuevo campo para indicar si el escaneo fue detenido
 }
+
+export interface PluginFiles {
+    zipFile?: string;
+    executableFile?: string;
+    documentationFiles: string[];
+    imageFiles: string[];
+    otherFiles: string[];
+}
+
+export interface DeveloperPlugins {
+    [pluginName: string]: PluginFiles;
+}
+
+export interface ParsedFileName {
+    developer: string;
+    pluginName: string;
+    platform: string;
+    version: string;
+    suffix: string;
+    extension: string;
+}

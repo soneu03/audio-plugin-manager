@@ -1,23 +1,23 @@
-// scanners.ts
+import { 
+    AudioPluginManagerSettings, 
+    ScanResults,
+    ParsedFileName,
+    PluginFiles,
+    DeveloperPlugins
+} from './types';
 import { Notice } from 'obsidian';
 import { StatusBar } from './ui/statusBar';
-import { PluginInfo, AudioPluginManagerSettings, ScanResults } from './types';
 import { NoteGenerator } from './noteGenerator';
 import { ZipManager } from './zipManager';
 import * as path from 'path';
 import * as fs from 'fs';
+import { FileRenamer } from './fileRenamer';
 
-interface PluginFiles {
-  zipFile?: string;
-  executableFile?: string;
-  documentationFiles: string[];
-  imageFiles: string[];
-  otherFiles: string[];
-}
-
-interface DeveloperPlugins {
-  [pluginName: string]: PluginFiles;
-}
+const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+const DOCUMENTATION_EXTENSIONS = ['.md', '.pdf', '.txt'];
+const INSTALLER_EXTENSIONS = ['.zip', '.exe', '.msi'];
+const DEVELOPER_LOG_FILENAME = '_developer_changes.log';
+const MARKDOWN_INDEX_FILENAME = 'Plugins-Index.md';
 
 export class PluginScanner {
   private stopRequested: boolean = false;
@@ -27,13 +27,25 @@ export class PluginScanner {
     private settings: AudioPluginManagerSettings,
     private noteGenerator: NoteGenerator,
     private statusBar: StatusBar
-  ) {}
-  
-  setLogCallback(callback: (message: string) => void) {
+  ) {
+    if (!fs.existsSync(this.settings.mainFolder)) {
+      throw new Error(`La carpeta '${this.settings.mainFolder}' no existe.`);
+    }
+  }
+
+  /**
+   * Sets the callback function for logging messages.
+   * @param callback A function that accepts a string message.
+   */
+  setLogCallback(callback: (message: string) => void): void {
     this.logCallback = callback;
   }
 
-  private log(message: string) {
+  /**
+   * Logs a message to the console and displays a notice in Obsidian.
+   * @param message The message to log.
+   */
+  private log(message: string): void {
     if (this.logCallback) {
       this.logCallback(message);
     }
@@ -41,146 +53,182 @@ export class PluginScanner {
     new Notice(message);
   }
 
+  /**
+   * Checks if a file has already been processed and has the correct naming format.
+   * @param fileName The name of the file.
+   * @param developerName The name of the developer.
+   * @param pluginName The name of the plugin.
+   * @returns True if the file is already processed, false otherwise.
+   */
   private isFileAlreadyProcessed(fileName: string, developerName: string, pluginName: string): boolean {
-    // Verificar si el archivo ya tiene el formato correcto:
-    // 1. Contiene " - " como separador
     const hasCorrectSeparator = fileName.includes(' - ');
-    
-    // 2. No contiene underscores
     const hasNoUnderscores = !fileName.includes('_');
-    
-    // 3. Termina con versión y extensión
     const versionMatch = fileName.match(/\d+(\.\d+)*\.[a-zA-Z]+$/);
     const hasVersionAndExt = versionMatch !== null;
 
-    // El archivo está procesado si cumple todas las condiciones
     return hasCorrectSeparator && hasNoUnderscores && hasVersionAndExt;
   }
 
+  /**
+   * Extracts the base name of a plugin from a file name.
+   * @param fileName The name of the file.
+   * @param developerName The name of the developer (optional).
+   * @returns The base name of the plugin.
+   */
   private getPluginBaseName(fileName: string, developerName: string = ''): string {
     let baseName = path.basename(fileName, path.extname(fileName));
-    
-    // Eliminar espacios extras y caracteres especiales
+
     baseName = baseName
-        .replace(/[\s-]+/g, ' ')  // Reemplazar múltiples espacios/guiones con un espacio
-        .trim();                  // Eliminar espacios al inicio/final
-    
-    // Si el nombre comienza con el nombre del desarrollador, eliminarlo
+      .replace(/[\s-]+/g, ' ')
+      .trim();
+
     if (developerName) {
-        const devNamePattern = new RegExp(`^${developerName}\\s*[-_]\\s*`, 'i');
-        baseName = baseName.replace(devNamePattern, '');
+      const devNamePattern = new RegExp(`^${developerName}\\s*[-_]\\s*`, 'i');
+      baseName = baseName.replace(devNamePattern, '');
     }
-    
-    // Eliminar sufijos comunes
+
     baseName = baseName.replace(/\s*(v\d+(\.\d+)*|PC|Windows|x64|Setup)$/i, '');
     return baseName;
   }
 
+  /**
+   * Sanitizes a plugin name to remove special characters and extra spaces.
+   * @param name The plugin name to sanitize.
+   * @returns The sanitized plugin name.
+   */
   private sanitizePluginName(name: string): string {
-    // Mantener el formato amigable
     return name
-        .replace(/[\s-]+/g, ' ')  // Reemplazar múltiples espacios/guiones con un espacio
-        .trim();                  // Eliminar espacios al inicio/final
+      .replace(/[\s-]+/g, ' ')
+      .trim();
   }
 
+  /**
+   * Normalizes a file name to follow a consistent naming convention.
+   * @param filePath The path to the file.
+   * @param developer The name of the developer.
+   * @param pluginName The name of the plugin.
+   * @returns The normalized file name.
+   */
   private normalizeFileName(filePath: string, developer: string, pluginName: string): string {
     const baseFileName = path.basename(filePath);
-    
-    // Extract version
     const version = this.extractVersion(baseFileName);
-    
-    // Clean developer name
     const friendlyDeveloper = developer.replace(/_/g, ' ').trim();
-    
-    // Clean plugin name and remove any existing developer name from it
-    let cleanPluginName = pluginName
-        .replace(new RegExp(`^${friendlyDeveloper}\\s*[-_]\\s*`, 'i'), '') // Remove developer name if it's at the start
-        .replace(new RegExp(`\\s*${version}\\s*`, 'i'), '') // Remove version
-        .replace(new RegExp(`^${friendlyDeveloper}\\s+${friendlyDeveloper}\\s*`, 'i'), friendlyDeveloper) // Remove duplicate developer name
-        .trim();
+    const cleanPluginName = this.cleanPluginName(pluginName, friendlyDeveloper, version);
+    const ext = path.extname(baseFileName);
 
-    // If plugin name already starts with developer name, don't add it again
     const finalName = cleanPluginName.toLowerCase().startsWith(friendlyDeveloper.toLowerCase())
-        ? `${cleanPluginName}${version}${path.extname(baseFileName)}`
-        : `${friendlyDeveloper} - ${cleanPluginName}${version}${path.extname(baseFileName)}`;
-    return finalName;
-    }
+      ? `${cleanPluginName}${version}${ext}`
+      : `${friendlyDeveloper} - ${cleanPluginName}${version}${ext}`;
 
+    return finalName;
+  }
+
+  /**
+   * Cleans a plugin name by removing developer name and version information.
+   * @param pluginName The plugin name to clean.
+   * @param friendlyDeveloper The cleaned developer name.
+   * @param version The version string.
+   * @returns The cleaned plugin name.
+   */
+  private cleanPluginName(pluginName: string, friendlyDeveloper: string, version: string): string {
+    return pluginName
+      .replace(new RegExp(`^${friendlyDeveloper}\\s*[-_]\\s*`, 'i'), '')
+      .replace(new RegExp(`\\s*${version}\\s*`, 'i'), '')
+      .replace(new RegExp(`^${friendlyDeveloper}\\s+${friendlyDeveloper}\\s*`, 'i'), friendlyDeveloper)
+      .trim();
+  }
+
+  /**
+   * Extracts the version number from a file name.
+   * @param fileName The name of the file.
+   * @returns The version number, or an empty string if no version is found.
+   */
   private extractVersion(fileName: string): string {
     const versionPatterns = [
-        /v?(\d+\.\d+\.\d+)/i,  // v1.0.0 o 1.0.0
-        /v?(\d+\.\d+)/i,       // v1.0 o 1.0
-        /v?(\d+)/i             // v1 o 1
+      /v?(\d+\.\d+\.\d+)/i,
+      /v?(\d+\.\d+)/i,
+      /v?(\d+)/i
     ];
-  
+
     for (const pattern of versionPatterns) {
-        const match = fileName.match(pattern);
-        if (match) {
-            // Extraer solo los números de versión, manteniendo la 'v' si existe
-            const version = match[0];
-            return version.startsWith('v') ? version : `${version}`;
-        }
+      const match = fileName.match(pattern);
+      if (match) {
+        const version = match[0];
+        return version.startsWith('v') ? version : `${version}`;
+      }
     }
-  
+
     return '';
   }
 
+  /**
+   * Processes a single file, renaming it if necessary.
+   * @param filePath The path to the file.
+   * @param developerPath The path to the developer directory.
+   * @param pluginName The name of the plugin.
+   * @returns The new path of the file, or the original path if renaming fails or is not needed.
+   */
   private async processFile(filePath: string, developerPath: string, pluginName: string): Promise<string> {
-    const developer = path.basename(developerPath);
     const currentFileName = path.basename(filePath);
-    
-    if (!/^[a-zA-Z0-9\s\-_.]+$/.test(pluginName) || !/^[a-zA-Z0-9\s\-_.]+$/.test(developer)) {
-        throw new Error(`Invalid characters in plugin name or developer: ${pluginName} / ${developer}`);
+    const parsedName = FileRenamer.parseFileName(currentFileName);
+    const newFileName = FileRenamer.normalizePluginFileName(parsedName, developerPath);
+
+    // Si el nombre actual ya es el correcto, no hacer nada
+    if (currentFileName === newFileName) {
+      this.log(`File name unchanged (already correct): ${currentFileName}`);
+      return filePath;
     }
 
-    if (this.isFileAlreadyProcessed(currentFileName, developer, pluginName)) {
-        return filePath; // Return original path if already processed
-    }
+    const newPath = path.join(developerPath, newFileName);
 
-    const newFileName = this.normalizeFileName(filePath, developer, pluginName);
-    let newPath = path.join(developerPath, newFileName);
-
-    if (fs.existsSync(newPath) && newPath !== filePath) {
-        const timestamp = Date.now();
-        const ext = path.extname(newFileName);
-        const baseName = newFileName.slice(0, -ext.length);
-        newPath = path.join(developerPath, `${baseName}_${timestamp}${ext}`);
+    try {
+      await fs.promises.access(developerPath, fs.constants.W_OK);
+        await fs.promises.rename(filePath, newPath);
+        this.log(`Renamed: ${currentFileName} -> ${newFileName}`);
+      return newPath;
+    } catch (error: any) {
+      if (error.code === 'EACCES') {
+        throw new Error(`No write permission in directory: ${developerPath}`);
+      }
+      console.error(`Error renaming file ${filePath}:`, error);
+      return filePath;
     }
-          try {
-        await fs.promises.access(developerPath, fs.constants.W_OK);
-        
-        if (newPath !== filePath) {
-            await fs.promises.rename(filePath, newPath);
-            this.log(`Renamed: ${currentFileName} -> ${path.basename(newPath)}`);
-          }
-        return newPath;
-    } catch (error) {
-        if (error.code === 'EACCES') {
-            throw new Error(`No write permission in directory: ${developerPath}`);
-    }
-        console.error(`Error renaming file ${filePath}:`, error);
-        return filePath; // Return original path if renaming fails
   }
-    }
 
-  public requestStop() {
+  /**
+   * Requests the plugin scanner to stop processing.
+   */
+  public requestStop(): void {
     this.stopRequested = true;
   }
 
-  public resetStop() {
+  /**
+   * Resets the stop request, allowing the plugin scanner to continue processing.
+   */
+  public resetStop(): void {
     this.stopRequested = false;
   }
 
+  /**
+   * Exports a list of plugins to a zip file.
+   * @param pluginPaths An array of plugin paths to include in the zip file.
+   * @param outputPath The path to save the zip file.
+   */
   async exportPluginsAsZip(pluginPaths: string[], outputPath: string): Promise<void> {
     try {
       await ZipManager.createZipFile(outputPath, pluginPaths, this.statusBar);
       new Notice(`Plugins exported successfully to ${outputPath}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error exporting plugins:', error);
       new Notice(`Error exporting plugins: ${error.message}`);
     }
   }
 
+  /**
+   * Checks if a file path should be omitted based on the configured folders to ignore.
+   * @param filePath The path to the file.
+   * @returns True if the file path should be omitted, false otherwise.
+   */
   private shouldOmitPath(filePath: string): boolean {
     return this.settings.foldersToIgnore.some(folder =>
       filePath.includes(`${path.sep}${folder}${path.sep}`) ||
@@ -188,74 +236,174 @@ export class PluginScanner {
     );
   }
 
+  /**
+   * Recursively finds all plugin files in a directory.
+   * @param dir The directory to search.
+   * @param files An array to store the found files.
+   */
   private findPluginFiles(dir: string, files: string[]): void {
     if (this.shouldOmitPath(dir)) return;
-    
-    const items = fs.readdirSync(dir, { withFileTypes: true });
-    
-    for (const item of items) {
-      const fullPath = path.join(dir, item.name);
-      
-      if (item.isDirectory()) {
-        this.findPluginFiles(fullPath, files);
-      } else if (item.isFile()) {
-        const ext = path.extname(item.name).toLowerCase();
-        if (this.settings.extensions.includes(ext) && !this.shouldOmitPath(fullPath)) {
-          files.push(fullPath);
+
+    try {
+      const items = fs.readdirSync(dir, { withFileTypes: true });
+
+      for (const item of items) {
+        const fullPath = path.join(dir, item.name);
+
+        if (item.isDirectory()) {
+          this.findPluginFiles(fullPath, files);
+        } else if (item.isFile()) {
+          const ext = path.extname(item.name).toLowerCase();
+          if (this.settings.extensions.includes(ext) && !this.shouldOmitPath(fullPath)) {
+            files.push(fullPath);
+          }
         }
       }
+    } catch (error) {
+      console.error(`Error reading directory ${dir}:`, error);
+      new Notice(`Error reading directory ${dir}: ${error}`); // Consider a more user-friendly message
     }
   }
 
-  private async createDeveloperLog(developerPath: string, logEntry: string) {
-    const logFileName = '_developer_changes.log';
-    const logFilePath = path.join(developerPath, logFileName);
+  /**
+   * Creates a log entry for a developer.
+   * @param developerPath The path to the developer directory.
+   * @param logEntry The log entry to write.
+   */
+  private async createDeveloperLog(developerPath: string, logEntry: string): Promise<void> {
+    const logFilePath = path.join(developerPath, DEVELOPER_LOG_FILENAME);
     const timestamp = new Date().toISOString();
     const logLine = `[${timestamp}] ${logEntry}\n`;
     try {
       await fs.promises.appendFile(logFilePath, logLine);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error writing to developer log: ${error}`);
+      new Notice(`Error writing to developer log: ${error}`);
     }
   }
 
+  /**
+   * Normalizes an image name to follow a consistent naming convention.
+   * @param fileName The name of the image file.
+   * @param pluginName The name of the plugin.
+   * @returns The normalized image name.
+   */
   private normalizeImageName(fileName: string, pluginName: string): string {
     const ext = path.extname(fileName).toLowerCase();
-    const baseName = path.basename(fileName, ext);
+    
+    // Limpiar el nombre del plugin
     const cleanPluginName = pluginName
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[-\s]+/g, '-')
-        .toLowerCase()
-        .trim();
-
-    // Si el nombre ya contiene el nombre del plugin, mantenerlo
-    if (baseName.toLowerCase().includes(cleanPluginName)) {
+        .replace(/[^a-zA-Z0-9\s]/g, '') // Eliminar caracteres especiales
+        .trim()
+        .replace(/\s+/g, '_'); // Reemplazar espacios con guiones bajos
+    
+    // Obtener el nombre base actual del archivo (sin extensión)
+    const currentBaseName = path.basename(fileName, ext)
+        .replace(/[^a-zA-Z0-9\s_-]/g, '')
+        .trim()
+        .replace(/\s+/g, '_')
+        .toLowerCase();
+    
+    // Si el nombre actual ya es correcto, devolver el nombre original
+    if (currentBaseName === cleanPluginName.toLowerCase()) {
         return fileName;
     }
-
-    // Crear nuevo nombre basado en el plugin
-    let imageNumber = 1;
+    
+    // Construir el nuevo nombre
     let newName = `${cleanPluginName}${ext}`;
-
-    while (fs.existsSync(path.join(path.dirname(fileName), newName))) {
-        newName = `${cleanPluginName}-${imageNumber}${ext}`;
-        imageNumber++;
+    
+    // Verificar si el archivo ya existe y añadir numeración si es necesario
+    const dirPath = path.dirname(fileName);
+    let counter = 1;
+    let finalPath = path.join(dirPath, newName);
+    
+    while (fs.existsSync(finalPath)) {
+        newName = `${cleanPluginName}-${counter}${ext}`;
+        finalPath = path.join(dirPath, newName);
+        counter++;
     }
-
+    
     return newName;
   }
 
+  private parseFileName(fileName: string): ParsedFileName {
+    const ext = path.extname(fileName);
+    let baseName = path.basename(fileName, ext);
+    
+    // Expresiones regulares para cada parte
+    const developerRegex = /^([^-]+?)(?:\s*[-_]\s*|\s+)/;
+    const versionRegex = /\s+(?:v?[\d.]+|v\d+)(?:\s*|$)/i;
+    const platformRegex = /\s+(?:x64|x86|win(?:dows)?(?:64)?|mac|osx|linux)(?:\s*|$)/i;
+    const suffixRegex = /\s+(?:installer|setup|full)(?:\s*|$)/i;
+
+    // Extraer cada parte
+    const developerMatch = baseName.match(developerRegex);
+    const developer = developerMatch ? developerMatch[1].trim() : '';
+    baseName = baseName.replace(developerRegex, '');
+
+    const versionMatch = baseName.match(versionRegex);
+    const version = versionMatch ? versionMatch[0].trim() : '';
+    baseName = baseName.replace(versionRegex, '');
+
+    const platformMatch = baseName.match(platformRegex);
+    const platform = platformMatch ? platformMatch[0].trim() : '';
+    baseName = baseName.replace(platformRegex, '');
+
+    const suffixMatch = baseName.match(suffixRegex);
+    const suffix = suffixMatch ? suffixMatch[0].trim() : '';
+    baseName = baseName.replace(suffixRegex, '');
+    return {
+        developer: developer,
+        pluginName: baseName.trim(),
+        platform: platform,
+        version: version,
+        suffix: suffix,
+        extension: ext.toLowerCase()
+    };
+  }
+
+  private normalizePluginFileName(parsedName: ParsedFileName, developerFolder: string): string {
+    const developer = path.basename(developerFolder);
+    let fileName = `${developer} - ${parsedName.pluginName}`;
+    
+    if (parsedName.platform) fileName += ` ${parsedName.platform}`;
+    if (parsedName.version) fileName += ` ${parsedName.version}`;
+    
+    return fileName + parsedName.extension.toLowerCase();
+}
+
+  /**
+   * Processes all files for a given plugin.
+   * @param pluginFiles An array of file paths to process.
+   * @param developerPath The path to the developer directory.
+   * @param pluginName The name of the plugin.
+   * @returns An array of processed file paths.
+   */
   private async processAllFiles(pluginFiles: string[], developerPath: string, pluginName: string): Promise<string[]> {
+    const results = await Promise.allSettled(
+      pluginFiles.map(file => this.processFile(file, developerPath, pluginName))
+    );
+
     const processedFiles: string[] = [];
-    
-    for (const file of pluginFiles) {
-        const newPath = await this.processFile(file, developerPath, pluginName);
-        processedFiles.push(newPath);
-    }
-    
+    results.forEach(result => {
+      if (result.status === 'fulfilled') {
+        processedFiles.push(result.value);
+      } else {
+        console.error(`Error processing file: ${result.reason}`);
+        // Optionally re-throw or handle the error.
+      }
+    });
+
     return processedFiles;
   }
 
+  /**
+   * Categorizes files into different types (documentation, images, other).
+   * @param files An array of file paths to categorize.
+   * @param pluginName The name of the plugin.
+   * @param developerPath The path to the developer directory.
+   * @returns A PluginFiles object containing categorized files.
+   */
   private async categorizeFiles(files: string[], pluginName: string, developerPath: string): Promise<PluginFiles> {
     const result: PluginFiles = {
       documentationFiles: [],
@@ -263,48 +411,86 @@ export class PluginScanner {
       otherFiles: []
     };
 
-    for (const file of files) {
-      const ext = path.extname(file).toLowerCase();
-      const fileName = path.basename(file);
+    // Identify installation and zip files first
+    const pluginFiles = files.filter(file => INSTALLER_EXTENSIONS.includes(path.extname(file).toLowerCase()));
 
+    // Process installation and zip files
+    for (const file of pluginFiles) {
+      const ext = path.extname(file).toLowerCase();
       if (ext === '.zip') {
         result.zipFile = file;
       } else if (ext === '.exe' || ext === '.msi') {
         result.executableFile = file;
-      } else if (['.md', '.pdf', '.txt'].includes(ext)) {
+      }
+    }
+
+    // Get base names of plugins
+    const pluginBaseNames = pluginFiles.map(file =>
+      this.getPluginBaseName(path.basename(file))
+        .toLowerCase()
+        .replace(/[^a-zA-Z0-9\s]/g, '')
+        .trim()
+    );
+
+    // Process the rest of the files
+    for (const file of files) {
+      const ext = path.extname(file).toLowerCase();
+      const fileName = path.basename(file);
+
+      if (pluginFiles.includes(file)) {
+        continue; // Already processed
+      } else if (DOCUMENTATION_EXTENSIONS.includes(ext)) {
         result.documentationFiles.push(file);
-      } else if (['.png', '.jpg', '.jpeg', '.gif'].includes(ext)) {
-        // Normalizar nombre de imagen basado en el nombre del plugin
-        const normalizedImageName = this.normalizeImageName(fileName, pluginName);
-        const dirPath = path.dirname(file);
-        const newImagePath = path.join(dirPath, normalizedImageName);
-        
-        // Renombrar la imagen si es necesario
-        if (fileName !== normalizedImageName) {
-          try {
-            fs.renameSync(file, newImagePath);
-            result.imageFiles.push(newImagePath);
-            this.log(`Renamed image: ${fileName} -> ${normalizedImageName}`);
-          } catch (error) {
-            console.error(`Error renaming image file: ${error}`);
-            result.imageFiles.push(file); // Usar ruta original si falla el renombrado
-  }
+      } else if (IMAGE_EXTENSIONS.includes(ext)) {
+        const imageBaseName = path.basename(fileName, ext)
+          .toLowerCase()
+          .replace(/[^a-zA-Z0-9\s]/g, '')
+          .trim();
+
+        const matchingPlugin = pluginBaseNames.find(pluginName =>
+          imageBaseName.includes(pluginName)
+        );
+
+        if (matchingPlugin) {
+          const normalizedImageName = this.normalizeImageName(fileName, matchingPlugin);
+          const dirPath = path.dirname(file);
+          const newImagePath = path.join(dirPath, normalizedImageName);
+
+            if (fileName === normalizedImageName) {
+                // El nombre ya está correcto
+                this.log(`Image name unchanged (already correct): ${fileName}`);
+                result.imageFiles.push(file);
+          } else {
+    try {
+                    fs.renameSync(file, newImagePath);
+                    result.imageFiles.push(newImagePath);
+                    this.log(`Renamed image: ${fileName} -> ${normalizedImageName}`);
+                } catch (error) {
+                    console.error(`Error renaming image file: ${error}`);
+                    result.imageFiles.push(file);
+                }
+            }
         } else {
-          result.imageFiles.push(file); // Usar ruta original si no se necesita renombrar
-}
+            result.imageFiles.push(file);
+        }
       } else {
         result.otherFiles.push(file);
       }
     }
+
     return result;
   }
 
+  /**
+   * Creates a Markdown index file for all plugins.
+   * @param allPlugins A map of all plugins, grouped by developer.
+   * @returns The path to the created Markdown index file.
+   */
   private async createMarkdownIndex(allPlugins: Map<string, DeveloperPlugins>): Promise<string> {
     try {
       const markdownPath = path.join(this.settings.mainFolder, '../Desarrolladores/Index.md');
       let markdownContent = `# Índice de Plugins de Audio\n\n`;
       markdownContent += `Actualizado: ${new Date().toLocaleString()}\n\n`;
-
       const totalDevelopers = allPlugins.size;
       const totalPlugins = Array.from(allPlugins.values())
         .reduce((sum, dev) => sum + Object.keys(dev).length, 0);
@@ -330,7 +516,6 @@ export class PluginScanner {
             const firstImage = files.imageFiles[0];
             markdownContent += `![[Desarrolladores/${developer}/${path.basename(firstImage)}]]\n\n`;
           }
-
           if (files.zipFile) {
             markdownContent += `- 📦 [[Desarrolladores/${developer}/${path.basename(files.zipFile)}|Archivo ZIP]]\n`;
           }
@@ -366,24 +551,27 @@ export class PluginScanner {
       this.log(`Índice Markdown generado: ${markdownPath}`);
 
       return markdownPath;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating markdown index:', error);
+      new Notice(`Error creating markdown index: ${error}`);
       throw error;
     }
   }
 
+  /**
+   * Scans and processes all plugins in the main folder.
+   * @param onProgress A callback function to report progress (optional).
+   * @returns A ScanResults object containing statistics about the scan.
+   */
   async scanAndProcessPlugins(onProgress?: (progress: number) => void): Promise<ScanResults> {
-    if (!fs.existsSync(this.settings.mainFolder)) {
-      throw new Error(`La carpeta '${this.settings.mainFolder}' no existe.`);
-    }
     let developersProcessed = 0;
     let pluginsCompressed = 0;
     let zipsCreated = 0;
-      
+
     const developerFolders = fs.readdirSync(this.settings.mainFolder, { withFileTypes: true })
       .filter(dirent => dirent.isDirectory())
       .map(dirent => path.join(this.settings.mainFolder, dirent.name));
-    
+
     const allPlugins: Map<string, DeveloperPlugins> = new Map();
 
     for (const developerPath of developerFolders) {
@@ -399,7 +587,7 @@ export class PluginScanner {
       this.findPluginFiles(developerPath, files);
 
       const pluginsGrouped: { [key: string]: string[] } = {};
-      
+
       for (const file of files) {
         const baseName = this.getPluginBaseName(path.basename(file), developerName);
         if (!pluginsGrouped[baseName]) {
@@ -411,13 +599,11 @@ export class PluginScanner {
       for (const pluginName of Object.keys(pluginsGrouped)) {
         if (this.stopRequested) break;
 
-        // Procesar todos los archivos del plugin
         const pluginFiles = pluginsGrouped[pluginName];
         const processedFiles = await this.processAllFiles(pluginFiles, developerPath, pluginName);
-        
-        // Categorizar los archivos procesados
+
         developerPlugins[pluginName] = await this.categorizeFiles(processedFiles, pluginName, developerPath);
-        
+
         await this.createDeveloperLog(developerPath,
           `Processed plugin: ${pluginName}\n` +
           `  Files processed: ${pluginFiles.length}\n` +
@@ -426,7 +612,7 @@ export class PluginScanner {
       }
 
       allPlugins.set(developerName, developerPlugins);
-      
+
       if (onProgress) {
         const progress = (developerFolders.indexOf(developerPath) + 1) / developerFolders.length * 100;
         onProgress(progress);
@@ -438,9 +624,9 @@ export class PluginScanner {
     const jsonPath = path.join(this.settings.mainFolder, 'plugins-data.json');
     fs.writeFileSync(jsonPath, JSON.stringify(Array.from(allPlugins.entries()), null, 2), 'utf8');
     try {
-      await this.noteGenerator.importMarkdownIndex(path.join(this.settings.mainFolder, 'Plugins-Index.md'));
+      await this.noteGenerator.importMarkdownIndex(path.join(this.settings.mainFolder, MARKDOWN_INDEX_FILENAME));
       new Notice('Plugin index imported to your vault');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error importing markdown index:', error);
       new Notice(`Error importing index: ${error.message}`);
     }
