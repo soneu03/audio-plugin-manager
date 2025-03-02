@@ -74,7 +74,7 @@ export class PluginScanner {
     // Eliminar sufijos comunes
     baseName = baseName.replace(/\s*(v\d+(\.\d+)*|PC|Windows|x64|Setup)$/i, '');
     return baseName;
-}
+  }
 
   private sanitizePluginName(name: string): string {
     // Mantener el formato amigable
@@ -85,36 +85,47 @@ export class PluginScanner {
 
   private normalizeFileName(filePath: string, developer: string, pluginName: string): string {
     const baseFileName = path.basename(filePath);
+    
+    // Extract version
     const version = this.extractVersion(baseFileName);
     
-    // Mantener el formato amigable
+    // Clean developer name
     const friendlyDeveloper = developer.replace(/_/g, ' ').trim();
-    const friendlyPluginName = pluginName.replace(/_/g, ' ').trim();
     
-    const ext = path.extname(baseFileName);
-    
-    // Formato: "Developer - Plugin - Platform Version.ext"
-    return `${friendlyDeveloper} - ${friendlyPluginName}${version}${ext}`;
-  }
+    // Clean plugin name and remove any existing developer name from it
+    let cleanPluginName = pluginName
+        .replace(new RegExp(`^${friendlyDeveloper}\\s*[-_]\\s*`, 'i'), '') // Remove developer name if it's at the start
+        .replace(new RegExp(`\\s*${version}\\s*`, 'i'), '') // Remove version
+        .replace(new RegExp(`^${friendlyDeveloper}\\s+${friendlyDeveloper}\\s*`, 'i'), friendlyDeveloper) // Remove duplicate developer name
+        .trim();
+
+    // If plugin name already starts with developer name, don't add it again
+    const finalName = cleanPluginName.toLowerCase().startsWith(friendlyDeveloper.toLowerCase())
+        ? `${cleanPluginName}${version}${path.extname(baseFileName)}`
+        : `${friendlyDeveloper} - ${cleanPluginName}${version}${path.extname(baseFileName)}`;
+    return finalName;
+    }
+
   private extractVersion(fileName: string): string {
     const versionPatterns = [
         /v?(\d+\.\d+\.\d+)/i,  // v1.0.0 o 1.0.0
         /v?(\d+\.\d+)/i,       // v1.0 o 1.0
         /v?(\d+)/i             // v1 o 1
     ];
-
+  
     for (const pattern of versionPatterns) {
         const match = fileName.match(pattern);
         if (match) {
-            // Mantener el formato original de la versión
-            return ` ${match[0]}`;
-  }
+            // Extraer solo los números de versión, manteniendo la 'v' si existe
+            const version = match[0];
+            return version.startsWith('v') ? version : `${version}`;
+        }
     }
-
+  
     return '';
-}
+  }
 
-  private async processPlugin(filePath: string, developerPath: string, pluginName: string): Promise<void> {
+  private async processFile(filePath: string, developerPath: string, pluginName: string): Promise<string> {
     const developer = path.basename(developerPath);
     const currentFileName = path.basename(filePath);
     
@@ -123,36 +134,38 @@ export class PluginScanner {
     }
 
     if (this.isFileAlreadyProcessed(currentFileName, developer, pluginName)) {
-        return;
+        return filePath; // Return original path if already processed
     }
 
     const newFileName = this.normalizeFileName(filePath, developer, pluginName);
     let newPath = path.join(developerPath, newFileName);
 
-    if (fs.existsSync(newPath)) {
+    if (fs.existsSync(newPath) && newPath !== filePath) {
         const timestamp = Date.now();
         const ext = path.extname(newFileName);
         const baseName = newFileName.slice(0, -ext.length);
         newPath = path.join(developerPath, `${baseName}_${timestamp}${ext}`);
     }
-    try {
+          try {
         await fs.promises.access(developerPath, fs.constants.W_OK);
         
-        await fs.promises.rename(filePath, newPath);
-        await this.createDeveloperLog(developerPath, 
-            `Renamed: ${currentFileName} -> ${path.basename(newPath)}`);
+        if (newPath !== filePath) {
+            await fs.promises.rename(filePath, newPath);
+            this.log(`Renamed: ${currentFileName} -> ${path.basename(newPath)}`);
+          }
+        return newPath;
     } catch (error) {
         if (error.code === 'EACCES') {
             throw new Error(`No write permission in directory: ${developerPath}`);
     }
         console.error(`Error renaming file ${filePath}:`, error);
-      throw error;
-    }
+        return filePath; // Return original path if renaming fails
   }
+    }
 
   public requestStop() {
     this.stopRequested = true;
-    }
+  }
 
   public resetStop() {
     this.stopRequested = false;
@@ -206,15 +219,53 @@ export class PluginScanner {
     }
   }
 
-  private categorizeFiles(files: string[]): PluginFiles {
+  private normalizeImageName(fileName: string, pluginName: string): string {
+    const ext = path.extname(fileName).toLowerCase();
+    const baseName = path.basename(fileName, ext);
+    const cleanPluginName = pluginName
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[-\s]+/g, '-')
+        .toLowerCase()
+        .trim();
+
+    // Si el nombre ya contiene el nombre del plugin, mantenerlo
+    if (baseName.toLowerCase().includes(cleanPluginName)) {
+        return fileName;
+    }
+
+    // Crear nuevo nombre basado en el plugin
+    let imageNumber = 1;
+    let newName = `${cleanPluginName}${ext}`;
+
+    while (fs.existsSync(path.join(path.dirname(fileName), newName))) {
+        newName = `${cleanPluginName}-${imageNumber}${ext}`;
+        imageNumber++;
+    }
+
+    return newName;
+  }
+
+  private async processAllFiles(pluginFiles: string[], developerPath: string, pluginName: string): Promise<string[]> {
+    const processedFiles: string[] = [];
+    
+    for (const file of pluginFiles) {
+        const newPath = await this.processFile(file, developerPath, pluginName);
+        processedFiles.push(newPath);
+    }
+    
+    return processedFiles;
+  }
+
+  private async categorizeFiles(files: string[], pluginName: string, developerPath: string): Promise<PluginFiles> {
     const result: PluginFiles = {
       documentationFiles: [],
       imageFiles: [],
       otherFiles: []
     };
-        for (const file of files) {
+
+    for (const file of files) {
       const ext = path.extname(file).toLowerCase();
-      const fileName = path.basename(file).toLowerCase();
+      const fileName = path.basename(file);
 
       if (ext === '.zip') {
         result.zipFile = file;
@@ -223,11 +274,28 @@ export class PluginScanner {
       } else if (['.md', '.pdf', '.txt'].includes(ext)) {
         result.documentationFiles.push(file);
       } else if (['.png', '.jpg', '.jpeg', '.gif'].includes(ext)) {
-        result.imageFiles.push(file);
-            } else {
-        result.otherFiles.push(file);
+        // Normalizar nombre de imagen basado en el nombre del plugin
+        const normalizedImageName = this.normalizeImageName(fileName, pluginName);
+        const dirPath = path.dirname(file);
+        const newImagePath = path.join(dirPath, normalizedImageName);
+        
+        // Renombrar la imagen si es necesario
+        if (fileName !== normalizedImageName) {
+          try {
+            fs.renameSync(file, newImagePath);
+            result.imageFiles.push(newImagePath);
+            this.log(`Renamed image: ${fileName} -> ${normalizedImageName}`);
+          } catch (error) {
+            console.error(`Error renaming image file: ${error}`);
+            result.imageFiles.push(file); // Usar ruta original si falla el renombrado
   }
+        } else {
+          result.imageFiles.push(file); // Usar ruta original si no se necesita renombrar
 }
+      } else {
+        result.otherFiles.push(file);
+      }
+    }
     return result;
   }
 
@@ -298,13 +366,12 @@ export class PluginScanner {
       this.log(`Índice Markdown generado: ${markdownPath}`);
 
       return markdownPath;
-
     } catch (error) {
       console.error('Error creating markdown index:', error);
       throw error;
     }
   }
-    
+
   async scanAndProcessPlugins(onProgress?: (progress: number) => void): Promise<ScanResults> {
     if (!fs.existsSync(this.settings.mainFolder)) {
       throw new Error(`La carpeta '${this.settings.mainFolder}' no existe.`);
@@ -334,20 +401,22 @@ export class PluginScanner {
       const pluginsGrouped: { [key: string]: string[] } = {};
       
       for (const file of files) {
-    const baseName = this.getPluginBaseName(path.basename(file), developerName);
-    if (!pluginsGrouped[baseName]) {
-        pluginsGrouped[baseName] = [];
-    }
-    pluginsGrouped[baseName].push(file);
-}
+        const baseName = this.getPluginBaseName(path.basename(file), developerName);
+        if (!pluginsGrouped[baseName]) {
+          pluginsGrouped[baseName] = [];
+        }
+        pluginsGrouped[baseName].push(file);
+      }
 
       for (const pluginName of Object.keys(pluginsGrouped)) {
         if (this.stopRequested) break;
 
+        // Procesar todos los archivos del plugin
         const pluginFiles = pluginsGrouped[pluginName];
-        developerPlugins[pluginName] = this.categorizeFiles(pluginFiles);
-
-        await this.processPlugin(pluginFiles[0], developerPath, pluginName);
+        const processedFiles = await this.processAllFiles(pluginFiles, developerPath, pluginName);
+        
+        // Categorizar los archivos procesados
+        developerPlugins[pluginName] = await this.categorizeFiles(processedFiles, pluginName, developerPath);
         
         await this.createDeveloperLog(developerPath,
           `Processed plugin: ${pluginName}\n` +
@@ -367,7 +436,7 @@ export class PluginScanner {
     await this.createMarkdownIndex(allPlugins);
 
     const jsonPath = path.join(this.settings.mainFolder, 'plugins-data.json');
-    fs.writeFileSync(jsonPath, JSON.stringify(Array.from(allPlugins.values()), null, 2), 'utf8');
+    fs.writeFileSync(jsonPath, JSON.stringify(Array.from(allPlugins.entries()), null, 2), 'utf8');
     try {
       await this.noteGenerator.importMarkdownIndex(path.join(this.settings.mainFolder, 'Plugins-Index.md'));
       new Notice('Plugin index imported to your vault');
