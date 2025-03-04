@@ -35,11 +35,12 @@ export class PluginProcessor {
     const version = this.fileNameParser.extractVersion(currentFileName); // Use fileNameParser
     const cleanedPluginName = this.fileNameParser.cleanPluginName(pluginName, developer, version); // Use fileNameParser
     const ext = path.extname(filePath);
-    
+
+    // Add "v" to version if it exists and doesn't already have it
+    const formattedVersion = version && !version.toLowerCase().startsWith('v') ? `v${version}` : version;
+        
     // Construir el nuevo nombre de archivo
-    const newFileName = cleanedPluginName.toLowerCase().startsWith(developer.toLowerCase())
-      ? `${cleanedPluginName}${version}${ext}`
-      : `${developer} - ${cleanedPluginName}${version}${ext}`;
+    const newFileName = `${cleanedPluginName} ${formattedVersion}${ext}`;
 
     // Si el nombre actual ya es el correcto, no hacer nada
     if (currentFileName === newFileName) {

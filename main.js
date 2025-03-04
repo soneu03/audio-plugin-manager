@@ -16953,7 +16953,6 @@ var PluginCategorizer = class {
   /**
    * Categorizes files into different types (documentation, images, other).
    * @param files An array of file paths to categorize.
-   * @param pluginName The name of the plugin.
    * @returns A PluginFiles object containing categorized files.
    */
   categorizeFiles(files) {
@@ -17109,7 +17108,8 @@ var PluginProcessor = class {
     const version = this.fileNameParser.extractVersion(currentFileName);
     const cleanedPluginName = this.fileNameParser.cleanPluginName(pluginName, developer, version);
     const ext = path6.extname(filePath);
-    const newFileName = cleanedPluginName.toLowerCase().startsWith(developer.toLowerCase()) ? `${cleanedPluginName}${version}${ext}` : `${developer} - ${cleanedPluginName}${version}${ext}`;
+    const formattedVersion = version && !version.toLowerCase().startsWith("v") ? `v${version}` : version;
+    const newFileName = `${cleanedPluginName} ${formattedVersion}${ext}`;
     if (currentFileName === newFileName) {
       this.log(`File name unchanged (already correct): ${currentFileName}`);
       return filePath;
@@ -17495,7 +17495,7 @@ var AudioPluginManager = class extends import_obsidian7.Plugin {
         this.updateStatusBar();
       }
       new import_obsidian7.Notice(
-        results.stopped ? "Scan stopped by user" : `Scan complete! Found ${results.plugins} plugins from ${results.developers} developers`
+        results.stopped ? "Scan stopped by user" : `Scan complete! Found ${results.plugins} plugins from ${results.developers}`
       );
       return results;
     } catch (error) {
