@@ -25,7 +25,6 @@ import { PluginCategorizer } from './services/pluginCategorizer';
 import { MarkdownGenerator } from './services/markdownGenerator';
 import { PluginProcessor } from './services/pluginProcessor';
 
-const DEVELOPER_LOG_FILENAME = '_developer_changes.log';
 const MARKDOWN_INDEX_FILENAME = 'Plugins-Index.md';
 
 export class PluginScanner {
@@ -103,22 +102,6 @@ export class PluginScanner {
   }
 
   /**
-   * Creates a log file in the developer's folder to track file renaming operations.
-   * @param developerPath The path to the developer's folder.
-   * @param logContent The content to write to the log file.
-   */
-  private async createDeveloperLog(developerPath: string, logContent: string): Promise<void> {
-    const logPath = path.join(developerPath, DEVELOPER_LOG_FILENAME);
-    try {
-      fs.appendFileSync(logPath, `${new Date().toLocaleString()} - ${logContent}\n`, 'utf8');
-      this.log(`Developer log created: ${logPath}`);
-    } catch (error: any) {
-      console.error(`Error creating developer log: ${logPath}`, error);
-      new Notice(`Error creating developer log: ${error.message}`);
-    }
-  }
-
-  /**
    * Scans and processes all plugins in the main folder.
    * @param onProgress A callback function to report progress (optional).
    * @returns A ScanResults object containing statistics about the scan.
@@ -159,12 +142,6 @@ export class PluginScanner {
         const processedFiles = await this.pluginProcessor.processAllFiles(pluginFiles, developerPath, pluginName);
 
         developerPlugins[pluginName] = this.pluginCategorizer.categorizeFiles(processedFiles);
-
-        await this.createDeveloperLog(developerPath,
-          `Processed plugin: ${pluginName}\n` +
-          `  Files processed: ${pluginFiles.length}\n` +
-          `  Files renamed: ${pluginFiles.map(f => path.basename(f)).join(', ')}`
-        );
       }
 
       allPlugins.set(developerName, developerPlugins);

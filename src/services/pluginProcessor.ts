@@ -10,6 +10,8 @@ import { Notice } from 'obsidian';
 import { AudioPluginManagerSettings, PluginFiles } from '../types';
 import { FileNameParser } from './fileNameParser'; // Import FileNameParser
 
+const DEVELOPER_LOG_FILENAME = '_developer_changes.log';
+
 export class PluginProcessor {
   private fileNameParser: FileNameParser; // Add FileNameParser instance
   private log: (message: string) => void;
@@ -32,15 +34,29 @@ export class PluginProcessor {
   async processFile(filePath: string, developerPath: string, pluginName: string): Promise<string> {
     const currentFileName = path.basename(filePath);
     const developer = path.basename(developerPath);
-    const version = this.fileNameParser.extractVersion(currentFileName); // Use fileNameParser
-    const cleanedPluginName = this.fileNameParser.cleanPluginName(pluginName, developer, version); // Use fileNameParser
     const ext = path.extname(filePath);
 
-    // Add "v" to version if it exists and doesn't already have it
-    const formattedVersion = version && !version.toLowerCase().startsWith('v') ? `v${version}` : version;
-        
-    // Construir el nuevo nombre de archivo
-    const newFileName = `${cleanedPluginName} ${formattedVersion}${ext}`;
+    // Check if the file is an image
+    const isImage = ['.png', '.jpg', '.jpeg', '.gif', '.webp'].includes(ext.toLowerCase());
+
+    let newFileName: string;
+    if (isImage) {
+      this.log(`Found image file: ${currentFileName}`); // Log the image file
+      // Use normalizeImageName to generate the new name
+      newFileName = this.fileNameParser.normalizeImageName(filePath, pluginName);
+      // Log the image file name to developer_log
+      await this.createDeveloperLog(developerPath, `Image file found: ${currentFileName}`);
+    } else {
+      // Process non-image files as before
+      const version = this.fileNameParser.extractVersion(currentFileName); // Use fileNameParser
+      const cleanedPluginName = this.fileNameParser.cleanPluginName(pluginName, developer, version); // Use fileNameParser
+
+      // Add "v" to version if it exists and doesn't already have it
+      const formattedVersion = version && !version.toLowerCase().startsWith('v') ? `v${version}` : version;
+
+      // Construir el nuevo nombre de archivo
+      newFileName = `${cleanedPluginName} ${formattedVersion}${ext}`;
+    }
 
     // Si el nombre actual ya es el correcto, no hacer nada
     if (currentFileName === newFileName) {
@@ -86,5 +102,20 @@ export class PluginProcessor {
     });
 
     return processedFiles;
+  }
+
+  /**
+   * Creates a log file in the developer's folder to track file renaming operations.
+   * @param developerPath The path to the developer's folder.
+   * @param logContent The content to write to the log file.
+   */
+  private async createDeveloperLog(developerPath: string, logContent: string): Promise<void> {
+    const logPath = path.join(developerPath, DEVELOPER_LOG_FILENAME);
+    try {
+      fs.appendFileSync(logPath, `${new Date().toLocaleString()} - ${logContent}\n`, 'utf8');
+      this.log(`Developer log updated: ${logPath}`);
+    } catch (error: any) {
+      console.error(`Error creating developer log: ${logPath}`, error);
+    }
   }
 }

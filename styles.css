@@ -1,0 +1,15 @@
+.audio-plugin-modal {
+    min-width: 400px;
+    padding: 20px;
+  }
+  
+  .audio-plugin-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  progress {
+    width: 100%;
+    height: 20px;
+  }
